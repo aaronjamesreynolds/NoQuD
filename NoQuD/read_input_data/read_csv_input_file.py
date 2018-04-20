@@ -30,7 +30,6 @@ def read_csv(filename):
     assembly_map = np.zeros([1, assemblies])  # coarse map for order of assemblies
     cell_size = assemblies * assembly_size / cells  # length of each cell
 
-
     for i in xrange(0, assembly_types):
         key_length[0][i] = data.iloc[20 + 4 * i, 1]
 
