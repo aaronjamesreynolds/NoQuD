@@ -32,15 +32,12 @@ def read_csv(filename):
 
 
     for i in xrange(0, assembly_types):
-
         key_length[0][i] = data.iloc[20 + 4 * i, 1]
 
     # This nest of for loops assigns the nuclear data given in the csv. Fast groups have
     # lower indexes
     for i in xrange(0, groups):  # loop over groups
-
         for j in xrange(0, unique_materials):  # loop over unique materials
-
             sig_t[i][j] = data.iloc[9, 1 + i + unique_materials * j]
             sig_sin[i][j] = data.iloc[10, 1 + i + unique_materials * j]
             sig_sout[i][j] = data.iloc[11, 1 + i + unique_materials * j]
@@ -50,15 +47,11 @@ def read_csv(filename):
 
     # Now we build a material map for each assembly.
     for i in xrange(0, assembly_types):  # loop over assembly types
-
         for j in xrange(0, int(assembly_cells / key_length[0][i])):  # loop over number of key lengths in each assembly type
-
             for k in xrange(0, int(key_length[0][i])):  # loop over key lengths
-
                 local_map[i][j * int(key_length[0][i]) + k] = data.iloc[21 + 4 * i, k + 1]
 
     for i in xrange(0, assemblies):
-
         assembly_map[0][i] = data.iloc[17, i + 1]
 
     # The local assembly maps are then used to make a global material map from the geometry described in the Assembly Map
@@ -67,7 +60,6 @@ def read_csv(filename):
 
     # This loops concatenates additional assemblies to the global map as specified in the Assembly Map entry.
     for i in xrange(1, assemblies):
-
         material = np.concatenate((material,local_map[int(data.iloc[17, i + 1]) - 1][:]))
 
     # Subtract one from each material value to reflect the correct index, then convert array to integers.
