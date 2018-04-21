@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 
+
 def read_csv(filename):
 
     # Load csv
@@ -50,23 +51,22 @@ def assign_cross_sections(data, groups, unique_materials):
             nu[i][j] = data.iloc[13, 1 + i + unique_materials * j]
             chi[i][j] = data.iloc[14, 1 + i + unique_materials * j]
 
-    return sig_t, sig_sin, sig_sout, sig_f, nu, chi,
+    return sig_t, sig_sin, sig_sout, sig_f, nu, chi
 
 
 def create_material_map(data, assemblies, assembly_types, assembly_cells, key_length, cells):
 
     local_map = np.zeros([assembly_types, assembly_cells])  # material map for each assembly
-    assembly_map = np.zeros([1, assemblies])  # coarse map for order of assemblies
+    assembly_map = np.zeros([assemblies])  # coarse map for order of assemblies
 
     # Now we build a material map for each assembly.
     for i in xrange(0, assembly_types):  # loop over assembly types
-        for j in xrange(0, int(
-                assembly_cells / key_length[0][i])):  # loop over number of key lengths in each assembly type
-            for k in xrange(0, int(key_length[0][i])):  # loop over key lengths
-                local_map[i][j * int(key_length[0][i]) + k] = data.iloc[21 + 4 * i, k + 1]
+        for j in xrange(0, int(assembly_cells / key_length[i])):  # loop over number of key lengths in each assembly type
+            for k in xrange(0, int(key_length[i])):  # loop over key lengths
+                local_map[i][j * int(key_length[i]) + k] = data.iloc[21 + 4 * i, k + 1]
 
     for i in xrange(0, assemblies):
-        assembly_map[0][i] = data.iloc[17, i + 1]
+        assembly_map[i] = data.iloc[17, i + 1]
 
     # The local assembly maps are then used to make a global material map from the geometry described in the Assembly Map
     # entry of the csv.
@@ -77,15 +77,15 @@ def create_material_map(data, assemblies, assembly_types, assembly_cells, key_le
         material = np.concatenate((material, local_map[int(data.iloc[17, i + 1]) - 1][:]))
 
     # Subtract one from each material value to reflect the correct index.
-    material = material - np.ones([1, cells])
+    material = material - np.ones([cells])
 
     return material.astype(int), assembly_map.astype(int)
 
 
 def assign_key_length(data, assembly_types):
-    key_length = np.zeros([1, assembly_types])  # the key length describes the length of periodicity in the material map
+    key_length = np.zeros([assembly_types])  # the key length describes the length of periodicity in the material map
     for i in xrange(0, assembly_types):
-        key_length[0][i] = data.iloc[20 + 4 * i, 1]
+        key_length[i] = int(data.iloc[20 + 4 * i, 1])
 
     return key_length
 
