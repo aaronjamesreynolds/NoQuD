@@ -62,8 +62,6 @@ def test_assign_cross_sections():
             assert exp_chi[j][i] == obs_chi[j][i]
 
 
-
-
 if __name__ == '__main__':
 
      test_assign_key_length()
