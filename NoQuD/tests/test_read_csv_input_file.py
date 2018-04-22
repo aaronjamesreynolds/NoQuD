@@ -6,10 +6,10 @@ import numpy as np
 
 def test_assign_key_length():
 
-    data = pd.read_csv('AI_test.csv', header = None)
+    data = pd.read_csv("AI_test.csv", header = None)
     assembly_types = int(data.iloc[0, 1])
     obv_key_length = assign_key_length(data, assembly_types)
-    exp_key_length = np.array([8.0, 8.0])
+    exp_key_length = np.array([8.0, 8.0])  # Values to expect from examining the input file.
 
     for i in xrange(0, len(obv_key_length)):
         assert obv_key_length[i] == exp_key_length[i]
@@ -29,7 +29,7 @@ def test_create_material_map():
         0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2,
         1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2,
         2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1,
-        2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2]
+        2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2]  # Values to expect from examining the input file.
     exp_assembly_map = [1, 2]
 
     for i in xrange(0, len(obs_material)):
@@ -45,6 +45,7 @@ def test_assign_cross_sections():
     unique_materials = int(data.iloc[5, 1])  # number of unique materials
     obs_sig_t, obs_sig_sin, obs_sig_sout, obs_sig_f, obs_nu, obs_chi = assign_cross_sections(data, groups,
                                                                                              unique_materials)
+    # Values to expect from examining the input file.
     exp_sig_t = np.array([[0.2, 0.2, 0.2], [0.6, 0.2, 5.]])
     exp_sig_sin = np.array([[0.2, 0., 0.2], [0., 0.17, 0.]])
     exp_sig_sout = np.array([[0., 0., 0.], [0., 0.03, 0.]])
