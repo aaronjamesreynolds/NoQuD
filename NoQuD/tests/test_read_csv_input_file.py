@@ -2,11 +2,17 @@
 from NoQuD.read_input_data.read_csv_input_file import assign_key_length, assign_cross_sections, create_material_map
 import pandas as pd
 import numpy as np
+import os
 
 
 def test_assign_key_length():
 
-    data = pd.read_csv("AI_test.csv", header = None)
+    """" Tests the key_length function from read_csv_input_file.py """
+
+    current_directory = os.path.abspath(__file__)
+    file_path = os.path.join(current_directory, '../AI_test.csv')
+
+    data = pd.read_csv(file_path, header = None)
     assembly_types = int(data.iloc[0, 1])
     obv_key_length = assign_key_length(data, assembly_types)
     exp_key_length = np.array([8.0, 8.0])  # Values to expect from examining the input file.
@@ -16,7 +22,12 @@ def test_assign_key_length():
 
 def test_create_material_map():
 
-    data = pd.read_csv('AI_test.csv', header = None)
+    """" Tests the create_material_length function from read_csv_input_file.py """
+
+    current_directory = os.path.abspath(__file__)
+    file_path = os.path.join(current_directory, '../AI_test.csv')
+
+    data = pd.read_csv(file_path, header=None)
     assemblies = int(data.iloc[1, 1])
     assembly_types = int(data.iloc[0, 1])
     cells = int(data.iloc[3, 1])
@@ -40,7 +51,13 @@ def test_create_material_map():
 
 def test_assign_cross_sections():
 
-    data = pd.read_csv('AI_test.csv', header = None)
+    """" Tests the assign_cross_sections function from read_csv_input_file.py """
+
+
+    current_directory = os.path.abspath(__file__)
+    file_path = os.path.join(current_directory, '../AI_test.csv')
+
+    data = pd.read_csv(file_path, header=None)
     groups = int(data.iloc[4, 1])  # number of neutron energy groups
     unique_materials = int(data.iloc[5, 1])  # number of unique materials
     obs_sig_t, obs_sig_sin, obs_sig_sout, obs_sig_f, obs_nu, obs_chi = assign_cross_sections(data, groups,
