@@ -9,6 +9,7 @@ from time import time
 from numba import jit
 import csv
 
+
 class StepCharacteristicSolver:
 
     # Define a default quadrature set to be used unless another is specified when an instance is intialized.
