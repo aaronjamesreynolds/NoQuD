@@ -59,12 +59,12 @@ def assign_cross_sections(data, groups, unique_materials):
     try:
         for i in xrange(0, groups):  # loop over groups
             for j in xrange(0, unique_materials):  # loop over unique materials
-                sig_t[i][j] = data.iloc[9, 1 + i + unique_materials * j]
-                sig_sin[i][j] = data.iloc[10, 1 + i + unique_materials * j]
-                sig_sout[i][j] = data.iloc[11, 1 + i + unique_materials * j]
-                sig_f[i][j] = data.iloc[12, 1 + i + unique_materials * j]
-                nu[i][j] = data.iloc[13, 1 + i + unique_materials * j]
-                chi[i][j] = data.iloc[14, 1 + i + unique_materials * j]
+                sig_t[i][j] = data.iloc[9, 1 + i + 2 * j]
+                sig_sin[i][j] = data.iloc[10, 1 + i + 2* j]
+                sig_sout[i][j] = data.iloc[11, 1 + i + 2 * j]
+                sig_f[i][j] = data.iloc[12, 1 + i + 2 * j]
+                nu[i][j] = data.iloc[13, 1 + i + 2 * j]
+                chi[i][j] = data.iloc[14, 1 + i + 2 * j]
     except IndexError:
         raise IndexError("The input file may have incorrect formatting. Make sure the nuclear data is correctly "
                          "formatted.")
