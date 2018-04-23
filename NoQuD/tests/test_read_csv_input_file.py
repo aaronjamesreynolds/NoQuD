@@ -63,12 +63,12 @@ def test_assign_cross_sections():
     obs_sig_t, obs_sig_sin, obs_sig_sout, obs_sig_f, obs_nu, obs_chi = assign_cross_sections(data, groups,
                                                                                              unique_materials)
     # Values to expect from examining the input file.
-    exp_sig_t = np.array([[0.2, 0.2, 0.2], [0.6, 0.2, 5.]])
-    exp_sig_sin = np.array([[0.2, 0., 0.2], [0., 0.17, 0.]])
-    exp_sig_sout = np.array([[0., 0., 0.], [0., 0.03, 0.]])
-    exp_sig_f = np.array([[0., 0.2, 0.], [0.6, 0., 5.]])
-    exp_nu = np.array([[0., 1.5, 0.], [1.5, 0., 1.5]])
-    exp_chi = np.array([[1., 0., 1.], [0., 0., 0.]])
+    exp_sig_t = np.array([[0.2, 0.2, 0.2], [0.6, 0.2, 1.1]])
+    exp_sig_sin = np.array([[0.2, 0.2, .17], [0, 0, 1.1]])
+    exp_sig_sout = np.array([[0, 0, 0.03], [0, 0, 0]])
+    exp_sig_f = np.array([[0, 0, 0], [0.6, 0.2, 0]])
+    exp_nu = np.array([[0, 0, 0], [1.5, 1.5, 0]])
+    exp_chi = np.array([[1, 1, 0], [0, 0, 0]])
 
     for i in xrange(0, unique_materials):
         for j in xrange(0, groups):
