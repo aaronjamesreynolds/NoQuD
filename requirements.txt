@@ -6,6 +6,6 @@ pytest
 pytest-cov
 numpy
 pandas
-matplotlib.pyplot
+matplotlib
 time
 #
