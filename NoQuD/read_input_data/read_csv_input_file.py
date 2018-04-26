@@ -7,6 +7,39 @@ import numpy as np
 
 def read_csv(filename):
 
+    """The read_csv function takes an input file, and returns a data set typically
+    used when solving a 1D radiation transport problems.
+
+        The structure of much of the returned data will depend on the number of materials present
+        and the number of energy groups. For example, if there were 3 unique materials and 2 energy groups,
+        sig_t would be a 2X3 array.
+
+        EX. sig_ t = [[1.1 2.2 3.3], [2.1 2.2 2.3]]
+
+        The first row represents total cross sections in each material for first energy group, and the
+        second row represents total cross section in each material for the second energy group. Each column corresponds
+        to a unique material.
+
+        Args:
+            filename (str): the name of the .csv input file in the local directory.
+
+        Returns:
+            sig_t (float[][]): total cross section
+            sig_sin (float[][]): in-scatter cross section
+            sig_sout (float[][]): out-scatter cross section
+            sig_f (float[][]): fission cross section
+            nu (float[][]): neutrons produced per fission
+            chi (float[][]): probability for a fission neutron to appear in a particular energy group
+            groups (int): energy groups
+            cells (int): total number of cells in mesh
+            cell_size (float): mesh size
+            assembly_map (int[]): describes how assemblies are ordered
+            material (int[]): map of material in each cell
+            assembly_size (float): size of each assembly
+            assembly_cells (int): number of cells in each assembly
+
+    """
+
     # Load csv
     try:
         data = pd.read_csv(filename, header = None)
@@ -48,6 +81,23 @@ def read_csv(filename):
 
 def assign_cross_sections(data, groups, unique_materials):
 
+    """The assign_cross_sections function is used to unpack cross section and nuclear data from an input file.
+
+        Args:
+            data (float [][]): raw data taken from an input file.
+            groups (int): number of energy groups
+            unique_materials (int): number of unique materials
+
+        Returns:
+            sig_t (float[][]): total cross section
+            sig_sin (float[][]): in-scatter cross section
+            sig_sout (float[][]): out-scatter cross section
+            sig_f (float[][]): fission cross section
+            nu (float[][]): neutrons produced per fission
+            chi (float[][]): probability for a fission neutron to appear in a particular energy group
+
+    """
+
     # Initialize matrices to hold nuclear data in each unique material in each energy group
     sig_t = np.zeros([groups, unique_materials])  # total macro cross section (mcs)
     sig_sin = np.zeros([groups, unique_materials])  # in-scatter mcs
@@ -77,6 +127,22 @@ def assign_cross_sections(data, groups, unique_materials):
 
 
 def create_material_map(data, assemblies, assembly_types, assembly_cells, key_length, cells):
+
+    """The create_material_map function is used to generate a global material map.
+
+        Args:
+            data (float [][]): raw data taken from an input file.
+            assemblies (int): number of assemblies
+            assembly_types (int): number of unique assemblies
+            assembly_cells (int): number of cells per assembly
+            key_length (int): length of cells describing periodic nature of assembly.
+            cells (int): number of cells
+
+        Returns:
+            material (int[]): identifies material in each cell.
+            assembly_map (int[]): describes how assemblies are ordered
+
+    """
 
     local_map = np.zeros([assembly_types, assembly_cells])  # material map for each assembly
     assembly_map = np.zeros([assemblies])  # coarse map for order of assemblies
@@ -113,6 +179,18 @@ def create_material_map(data, assemblies, assembly_types, assembly_cells, key_le
 
 
 def assign_key_length(data, assembly_types):
+
+    """The assign_key_length function is used to unpack the key length parameters given in the input file.
+
+        Args:
+            data (float [][]): raw data taken from an input file.
+            assembly_types (int): number of unique assemblies
+
+        Returns:
+            key_length (int): length of cells describing periodic nature of assembly.
+
+    """
+
     key_length = np.zeros([assembly_types])  # the key length describes the length of periodicity in the material map
     try:
         for i in xrange(0, assembly_types):
@@ -125,7 +203,3 @@ def assign_key_length(data, assembly_types):
                          "formatted.")
 
     return key_length
-
-
-if __name__ == "__main__":
-    print read_csv("AI_test.csv")
