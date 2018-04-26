@@ -17,3 +17,4 @@ def test_integration():
     assembly_cells = read_csv.read_csv(file_path)
 
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
+    slab.solve()
