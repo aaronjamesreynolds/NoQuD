@@ -22,6 +22,7 @@ class Nodal:
                                        self.order_of_legendre_poly * self.nodes))
         self.lhs_boundary_condition()
         self.rhs_boundary_condition()
+        self.flux_interface_condition()
 
     def lhs_boundary_condition(self):
 
@@ -37,10 +38,27 @@ class Nodal:
 
                 self.linear_system[i][1][-j] = self.repeated_coefficients[1][-j]
 
+    def flux_interface_condition(self):
+
+        for i in xrange(0, self.groups):
+            for j in xrange(0, self.nodes - 1):
+                for k in xrange(0, self.order_of_legendre_poly):
+
+                    rhs = self.repeated_coefficients[1][k]*self.diffusion_constant[i][j]/self.cell_size[i][j]
+                    self.linear_system[i][2 + j][self.order_of_legendre_poly * j + k] = rhs
+
+                    rhs = self.repeated_coefficients[5][k]*self.diffusion_constant[i][j + 1]/self.cell_size[i][j + 1]
+                    self.linear_system[i][2 + j][self.order_of_legendre_poly * (j + 1) + k] = rhs
 
 
 
 if __name__ == "__main__":
 
-    test = Nodal(1, 1, 1, 1, 2, 2)
+    diffusion_coefficient = [[1, 1, 1], [1, 1, 1]]
+    sigma_r = [[1, 1, 1], [1, 1, 1]]
+    cell_size = [[1, 1, 1], [1, 1, 1]]
+    f = 1
+    groups = 2
+    nodes = 3
+    test = Nodal(diffusion_coefficient,  sigma_r, cell_size, f, groups, nodes)
     print test.linear_system
