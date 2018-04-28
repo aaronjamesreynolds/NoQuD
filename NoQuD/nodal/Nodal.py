@@ -23,6 +23,7 @@ class Nodal:
         self.lhs_boundary_condition()
         self.rhs_boundary_condition()
         self.flux_interface_condition()
+        self.current_interface_condition()
 
     def lhs_boundary_condition(self):
 
@@ -50,15 +51,27 @@ class Nodal:
                     rhs = self.repeated_coefficients[5][k]*self.diffusion_constant[i][j + 1]/self.cell_size[i][j + 1]
                     self.linear_system[i][2 + j][self.order_of_legendre_poly * (j + 1) + k] = rhs
 
+    def current_interface_condition(self):
+
+        for i in xrange(0, self.groups):
+            for j in xrange(0, self.nodes - 1):
+                for k in xrange(0, self.order_of_legendre_poly):
+
+                    rhs1 = f[i][2 * j]
+                    self.linear_system[i][self.nodes + 1 + j][self.order_of_legendre_poly * j + k] = rhs1
+
+                    rhs2 = pow(-1, k) * f[i][2 * j + 1]
+                    self.linear_system[i][self.nodes + 1 + j][self.order_of_legendre_poly * (j + 1) + k] = rhs2
+
 
 
 if __name__ == "__main__":
 
-    diffusion_coefficient = [[1, 1, 1], [1, 1, 1]]
-    sigma_r = [[1, 1, 1], [1, 1, 1]]
-    cell_size = [[1, 1, 1], [1, 1, 1]]
-    f = 1
+    diffusion_coefficient = [[1, 1], [1, 1]]
+    sigma_r = [[1, 1], [1, 1]]
+    cell_size = [[1, 1], [1, 1]]
+    f = [[2, 2], [2, 2]]
     groups = 2
-    nodes = 3
+    nodes = 2
     test = Nodal(diffusion_coefficient,  sigma_r, cell_size, f, groups, nodes)
     print test.linear_system
