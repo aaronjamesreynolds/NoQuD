@@ -201,7 +201,7 @@ class StepCharacteristicSolver:
                     self.angular_flux_center[k][i][z] = n / d
 
             for z in xrange(0, 5):
-                for i in reversed(xrange(1, self.core_mesh_length + 1)):
+                for i in range(self.core_mesh_length, 0, -1):
                     self.angular_flux_edge[k][i - 1][z] = self.angular_flux_edge[k][i][z] * numpy.exp(
                         -self.sig_t[k][self.material[i - 1]] * self.dx / abs(self.ab[z])) + (
                                                                   (self.dx * self.sig_s_in[k][
