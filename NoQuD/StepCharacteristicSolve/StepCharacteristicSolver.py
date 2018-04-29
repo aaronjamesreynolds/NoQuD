@@ -44,8 +44,8 @@ spec = [
 
 ]
 
-#@jitclass(spec)
-class StepCharacteristicSolver:
+@jitclass(spec)
+class StepCharacteristicSolver(object):
 
     # Initialize and assign variables.
     def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi):
@@ -225,14 +225,14 @@ class StepCharacteristicSolver:
     def source_iteration(self):
 
         # New eigenvalue.
-        self.k_new = self.k_old * sum(self.spatial_fission_new[0][:]) / sum(self.spatial_fission_old[0][:])
+        self.k_new = self.k_old * numpy.sum(self.spatial_fission_new[0][:]) / numpy.sum(self.spatial_fission_old[0][:])
 
         # New source.
         self.Q = (self.spatial_sig_s_out + self.spatial_fission_new / self.k_new)
 
     # Using all the methods above, solve for an eigenvalue and flux with defined convergence criteria.
     def solve(self):
-        self.start = time()  # start timing
+        #self.start = time()  # start timing
         print "Sit tight. This takes a while."
 
         while self.exit2 == 0:  # source convergence
@@ -245,8 +245,8 @@ class StepCharacteristicSolver:
                 self.flux_iteration()  # do a flux iteration
 
                 # Check for convergence
-                if abs(max(((self.flux_new[0][:] - self.flux_old[0][:]) / self.flux_new[0][:]))) < 1E-6 and abs(
-                        max(((self.flux_new[1][:] - self.flux_old[1][:]) / self.flux_new[1][:]))) < 1E-6:
+                if abs(numpy.max(((self.flux_new[0][:] - self.flux_old[0][:]) / self.flux_new[0][:]))) < 1E-6 and abs(
+                        numpy.max(((self.flux_new[1][:] - self.flux_old[1][:]) / self.flux_new[1][:]))) < 1E-6:
                     self.exit1 = 1  # exit flux iteration
                     self.flux_old = self.flux_new # assign flux
 
@@ -255,7 +255,7 @@ class StepCharacteristicSolver:
                     self.flux_new = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)  # reset new_flux
                     self.assign_boundary_condition()
 
-            print 'Flux converged: {0} total iterations'.format(self.flux_iterations)
+            #print 'Flux converged: {0} total iterations'.format(self.flux_iterations)
 
             # Form scattering source.
             self.form_scatter_source()
@@ -267,12 +267,12 @@ class StepCharacteristicSolver:
             self.source_iteration()
 
             # Check for convergence of new eigen value and fission source
-            if abs(self.k_new - self.k_old) / self.k_old < 1.0E-5 and max(
+            if abs(self.k_new - self.k_old) / self.k_old < 1.0E-5 and numpy.max(
                     self.spatial_fission_old[0][:] - self.spatial_fission_new[0][:]) < 1.0E-5:
 
                 self.exit2 = 1  # exit source iteration
                 self.flux_new = self.flux_new / (numpy.sum(self.flux_new)) # normalize flux
-                self.end = time()  # timing end point
+                #self.end = time()  # timing end point
 
             else:
 
