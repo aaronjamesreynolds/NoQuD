@@ -69,7 +69,6 @@ class StepCharacteristicSolver(object):
         # Problem geometry parameters
         self.groups = 2  # energy groups in problem
         self.core_mesh_length = 128  # number of intervals
-        #self.number_assemblies = 2  # number of assemblies in problem
         self.dx = 20.0 / self.core_mesh_length  # discretization in length
         self.dmu = 2 / len(self.ab) # discretization in angle
 
@@ -232,7 +231,6 @@ class StepCharacteristicSolver(object):
 
     # Using all the methods above, solve for an eigenvalue and flux with defined convergence criteria.
     def solve(self):
-        #self.start = time()  # start timing
         print "Sit tight. This takes a while."
 
         while self.exit2 == 0:  # source convergence
@@ -255,8 +253,6 @@ class StepCharacteristicSolver(object):
                     self.flux_new = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)  # reset new_flux
                     self.assign_boundary_condition()
 
-            #print 'Flux converged: {0} total iterations'.format(self.flux_iterations)
-
             # Form scattering source.
             self.form_scatter_source()
 
@@ -272,7 +268,6 @@ class StepCharacteristicSolver(object):
 
                 self.exit2 = 1  # exit source iteration
                 self.flux_new = self.flux_new / (numpy.sum(self.flux_new)) # normalize flux
-                #self.end = time()  # timing end point
 
             else:
 
