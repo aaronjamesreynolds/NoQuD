@@ -2,18 +2,18 @@
 
 import numpy as np
 from numba import jitclass          # import the decorator
-from numba import int64, float32
+from numba import int64, float64
 
 spec = [
-    ('repeated_coefficients', float32[:, :]),               # a simple scalar field
-    ('diffusion_constant', float32[:, :]),
-    ('sigma_r', float32[:, :]),
-    ('cell_size', float32[:, :]),
-    ('f', float32[:, :]),
+    ('repeated_coefficients', float64[:, :]),               # a simple scalar field
+    ('diffusion_constant', float64[:, :]),
+    ('sigma_r', float64[:, :]),
+    ('cell_size', float64[:, :]),
+    ('f', float64[:, :]),
     ('groups', int64),
     ('nodes', int64),
     ('order_of_legendre_poly', int64),
-    ('linear_system', float32[:, :, :]),
+    ('linear_system', float64[:, :, :]),
 
 ]
 
@@ -87,10 +87,10 @@ class Nodal(object):
 
 if __name__ == "__main__":
 
-    diffusion_coefficient = np.array([[1, 1], [1, 1]], dtype=np.float32)
-    sigma_r = np.array([[1, 1], [1, 1]], dtype=np.float32)
-    cell_size = np.array([[1, 1], [1, 1]], dtype=np.float32)
-    f = np.array([[1, 1], [1, 1]], dtype=np.float32)
+    diffusion_coefficient = np.array([[1, 1], [1, 1]], dtype=np.float64)
+    sigma_r = np.array([[1, 1], [1, 1]], dtype=np.float64)
+    cell_size = np.array([[1, 1], [1, 1]], dtype=np.float64)
+    f = np.array([[1, 1], [1, 1]], dtype=np.float64)
     groups = int(2)
     nodes = int(2)
     test = Nodal(diffusion_coefficient, sigma_r, cell_size, f, groups, nodes)
