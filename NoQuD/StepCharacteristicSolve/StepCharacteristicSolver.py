@@ -74,17 +74,25 @@ class StepCharacteristicSolver:
         self.dmu = 2 / len(self.ab) # discretization in angle
 
         # Set initial values
-        self.flux_new = numpy.ones([self.groups, self.core_mesh_length])  # initialize flux
-        self.flux_old = numpy.ones([self.groups, self.core_mesh_length])  # initialize flux
-        self.phi_L_old = numpy.ones([self.groups, len(self.ab) / 2])  # initialize left boundary condition
-        self.phi_R_old = numpy.ones([self.groups, len(self.ab) / 2])  # initialize right boundary condition
-        self.angular_flux_edge = numpy.zeros([self.groups, self.core_mesh_length + 1, len(self.ab)])  # initialize edge flux
-        self.angular_flux_center = numpy.zeros([self.groups, self.core_mesh_length, len(self.ab)])  # initialize edge flux
+        self.flux_new = numpy.ones((self.groups, self.core_mesh_length), dtype=numpy.float64)  # initialize flux
+        self.flux_old = numpy.ones((self.groups, self.core_mesh_length), dtype=numpy.float64)  # initialize flux
+        self.phi_L_old = numpy.ones((self.groups, len(self.ab) / 2),
+                                    dtype=numpy.float64)  # initialize left boundary condition
+        self.phi_R_old = numpy.ones((self.groups, len(self.ab) / 2),
+                                    dtype=numpy.float64)  # initialize right boundary condition
+        self.angular_flux_edge = numpy.zeros((self.groups, self.core_mesh_length + 1, len(self.ab)),
+                                             dtype=numpy.float64)  # initialize edge flux
+        self.angular_flux_center = numpy.zeros((self.groups, self.core_mesh_length, len(self.ab)),
+                                               dtype=numpy.float64)  # initialize edge flux
         self.k_old = 1.0  # initialize eigenvalue
-        self.spatial_fission_old = numpy.zeros([self.groups, self.core_mesh_length])  # initialize fission source
-        self.spatial_fission_new = numpy.zeros([self.groups, self.core_mesh_length])  # initialize fission source
-        self.material = [2] * int(self.core_mesh_length)  # material map
-        #self.E = numpy.zeros([self.groups, self.core_mesh_length])  # initialize eddington factors
+        self.k_new = 1.0  # initialize eigenvalue
+        self.spatial_fission_old = numpy.zeros((self.groups, self.core_mesh_length),
+                                               dtype=numpy.float64)  # initialize fission source
+        self.spatial_fission_new = numpy.zeros((self.groups, self.core_mesh_length),
+                                               dtype=numpy.float64)  # initialize fission source
+        self.material = numpy.array([int(2)] * int(self.core_mesh_length), dtype=numpy.int64)  # material map
+        # self.E = numpy.zeros([self.groups, self.core_mesh_length])  # initialize eddington factors
+        self.fission_source_dx = 0.0
 
         # Solver metrics
         self.exit1 = 0  # initialize exit condition
