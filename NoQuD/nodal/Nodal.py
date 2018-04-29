@@ -40,9 +40,6 @@ class Nodal(object):
                                        self.order_of_legendre_poly * self.nodes), dtype=np.float32)
         self.build_linear_system()
 
-
-
-    @property
     def lhs_boundary_condition(self):
 
         for i in xrange(0, self.groups):
@@ -83,7 +80,7 @@ class Nodal(object):
 
     def build_linear_system(self):
 
-        self.lhs_boundary_condition
+        self.lhs_boundary_condition()
         self.rhs_boundary_condition()
         self.flux_interface_condition()
         self.current_interface_condition()
