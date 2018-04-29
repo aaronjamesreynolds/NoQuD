@@ -36,13 +36,12 @@ spec = [
     ('exit2', int64),
     ('flux_iterations', int64),
     ('source_iterations', int64),
-    ('start', float64),
-    ('end', float64),
     ('Q', float64[:, :]),
     ('fission_source_dx', float64),
     ('spatial_sig_s_out', float64[:, :])
 
 ]
+
 
 @jitclass(spec)
 class StepCharacteristicSolver(object):
@@ -99,8 +98,6 @@ class StepCharacteristicSolver(object):
         self.exit2 = 0  # initialize exit condition
         self.flux_iterations = 0  # iteration counter
         self.source_iterations = 0  # iteration counter
-        self.start = 0  # timer
-        self.end = 0  # timer
 
         # Make material map
         self.material_map()
