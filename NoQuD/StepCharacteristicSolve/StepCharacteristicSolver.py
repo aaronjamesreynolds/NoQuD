@@ -111,7 +111,7 @@ class StepCharacteristicSolver:
 
         # Form fission sources for each group.
         self.form_fission_source()
-        self.spatial_fission_old= self.spatial_fission_new
+        self.spatial_fission_old = self.spatial_fission_new
 
         # Form combined source
         self.Q = self.spatial_sig_s_out + self.spatial_fission_old / self.k_old
@@ -128,7 +128,7 @@ class StepCharacteristicSolver:
     # With a given flux, the source from scattering is calculated.
     def form_scatter_source(self):
         # Form scattering source.
-        self.spatial_sig_s_out = numpy.zeros([self.groups, self.core_mesh_length])
+        self.spatial_sig_s_out = numpy.zeros((self.groups, self.core_mesh_length),dtype=numpy.float64)
         for i in xrange(self.core_mesh_length):
             for k in xrange(self.groups):
                 self.spatial_sig_s_out[1 - k][i] = self.dx * self.flux_old[k][i] * self.sig_s_out[k][self.material[i]]
