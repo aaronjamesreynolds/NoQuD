@@ -128,7 +128,7 @@ class StepCharacteristicSolver:
     # With a given flux, the source from scattering is calculated.
     def form_scatter_source(self):
         # Form scattering source.
-        self.spatial_sig_s_out = numpy.zeros((self.groups, self.core_mesh_length),dtype=numpy.float64)
+        self.spatial_sig_s_out = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)
         for i in xrange(self.core_mesh_length):
             for k in xrange(self.groups):
                 self.spatial_sig_s_out[1 - k][i] = self.dx * self.flux_old[k][i] * self.sig_s_out[k][self.material[i]]
@@ -136,7 +136,7 @@ class StepCharacteristicSolver:
     # With a given flux, the source from fission is calculated.
     def form_fission_source(self):
         # Form fission source.
-        self.spatial_fission_new = numpy.zeros([self.groups, self.core_mesh_length])
+        self.spatial_fission_new = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)
         for i in xrange(self.core_mesh_length):
             for k in xrange(self.groups):
                 for h in xrange(self.groups):
@@ -172,7 +172,7 @@ class StepCharacteristicSolver:
     def assign_boundary_condition(self):
         # Redefine angular flux at boundaries.
         for k in xrange(self.groups):
-            for j in [0, self.core_mesh_length]:
+            for j in xrange(0, self.core_mesh_length+1):
                 for i in xrange(10):
                     if i + 1 <= len(self.ab) / 2 and j == self.core_mesh_length:
                         self.angular_flux_edge[k][j][i] = self.angular_flux_edge[k][j][len(self.ab) - i - 1]
