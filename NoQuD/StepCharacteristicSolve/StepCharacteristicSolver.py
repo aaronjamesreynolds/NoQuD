@@ -5,8 +5,7 @@
 
 import numpy
 import matplotlib.pyplot as plt
-from time import time
-from numba import jitclass, int64, float64, float32
+from numba import jitclass, int64, float64
 
 spec = [
     ('sig_t', float64[:, :]),
@@ -47,7 +46,7 @@ spec = [
 class StepCharacteristicSolver(object):
 
     # Initialize and assign variables.
-    def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi):
+    def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi, material):
 
         # Nuclear data
         self.sig_t = sig_t  # total cross section
@@ -89,7 +88,8 @@ class StepCharacteristicSolver(object):
                                                dtype=numpy.float64)  # initialize fission source
         self.spatial_fission_new = numpy.zeros((self.groups, self.core_mesh_length),
                                                dtype=numpy.float64)  # initialize fission source
-        self.material = numpy.array([int(2)] * int(self.core_mesh_length), dtype=numpy.int64)  # material map
+        self.material = material  # material map
+        # self.material = numpy.array([int(2)] * int(self.core_mesh_length), dtype=numpy.int64)  # material map
         # self.E = numpy.zeros([self.groups, self.core_mesh_length])  # initialize eddington factors
         self.fission_source_dx = 0.0
 
@@ -100,7 +100,7 @@ class StepCharacteristicSolver(object):
         self.source_iterations = 0  # iteration counter
 
         # Make material map
-        self.material_map()
+        #self.material_map()
 
         # Form spatial matrix for in scatter from other groups.
         self.form_scatter_source()
