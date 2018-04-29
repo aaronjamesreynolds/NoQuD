@@ -47,16 +47,8 @@ spec = [
 #@jitclass(spec)
 class StepCharacteristicSolver:
 
-    # Define a default quadrature set to be used unless another is specified when an instance is intialized.
-    ab_default = [-0.9739065285171717, -0.8650633666889845, -0.6794095682990244, -0.4333953941292472, -0.1488743389816312,
-     0.1488743389816312, 0.4333953941292472, 0.6794095682990244, 0.8650633666889845, 0.9739065285171717]
-
-    weights_default = numpy.array(
-        [0.0666713443086881, 0.1494513491505806, 0.2190863625159820, 0.2692667193099963, 0.2955242247147529,
-         0.2955242247147529, 0.2692667193099963, 0.2190863625159820, 0.1494513491505806, 0.0666713443086881])
-
     # Initialize and assign variables.
-    def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi, ab = ab_default, weights = weights_default):
+    def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi):
 
         # Nuclear data
         self.sig_t = sig_t  # total cross section
@@ -67,8 +59,12 @@ class StepCharacteristicSolver:
         self.chi = chi  # probability of fission neutrons appearing in each group
 
         # Quadrature data
-        self.ab = ab
-        self.weights = weights
+        self.ab = numpy.array([-0.9739065285171717, -0.8650633666889845, -0.6794095682990244, -0.4333953941292472,
+                               -0.1488743389816312, 0.1488743389816312, 0.4333953941292472, 0.6794095682990244,
+                               0.8650633666889845, 0.9739065285171717], dtype=numpy.float64)
+        self.weights = numpy.array([0.0666713443086881, 0.1494513491505806, 0.2190863625159820, 0.2692667193099963,
+                                    0.2955242247147529, 0.2955242247147529, 0.2692667193099963, 0.2190863625159820,
+                                    0.1494513491505806, 0.0666713443086881], dtype=numpy.float64)
 
         # Problem geometry parameters
         self.groups = 2  # energy groups in problem
