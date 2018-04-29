@@ -6,7 +6,45 @@
 import numpy
 import matplotlib.pyplot as plt
 from time import time
+from numba import jitclass, int64, float64, float32
 
+spec = [
+    ('sig_t', float64[:, :]),
+    ('sig_s_in', float64[:, :]),
+    ('sig_s_out', float64[:, :]),
+    ('sig_f', float64[:, :]),
+    ('nu', float64[:, :]),
+    ('chi', float64[:, :]),
+    ('ab', float64[:]),
+    ('weights', float64[:]),
+    ('groups', int64),
+    ('core_mesh_length', int64),
+    ('dx', float64),
+    ('dmu', float64),
+    ('flux_new', float64[:, :]),
+    ('flux_old', float64[:, :]),
+    ('phi_L_old', float64[:, :]),
+    ('phi_R_old', float64[:, :]),
+    ('angular_flux_edge', float64[:, :, :]),
+    ('angular_flux_center', float64[:, :, :]),
+    ('k_old', float64),
+    ('k_new', float64),
+    ('spatial_fission_old', float64[:, :]),
+    ('spatial_fission_new', float64[:, :]),
+    ('material', int64[:]),
+    ('exit1', int64),
+    ('exit2', int64),
+    ('flux_iterations', int64),
+    ('source_iterations', int64),
+    ('start', float64),
+    ('end', float64),
+    ('Q', float64[:, :]),
+    ('fission_source_dx', float64),
+    ('spatial_sig_s_out', float64[:, :])
+
+]
+
+#@jitclass(spec)
 class StepCharacteristicSolver:
 
     # Define a default quadrature set to be used unless another is specified when an instance is intialized.
