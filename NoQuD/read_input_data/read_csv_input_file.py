@@ -75,7 +75,7 @@ def read_csv(filename):
     print "File loaded."
 
     # Return relevant parameters.
-    return sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map.astype(int), material, \
+    return sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, \
            assembly_size, assembly_cells
 
 
@@ -175,7 +175,7 @@ def create_material_map(data, assemblies, assembly_types, assembly_cells, key_le
     # Subtract one from each material value to reflect the correct index.
     material = material - np.ones([cells])
 
-    return material.astype(int), assembly_map.astype(int)
+    return np.array(material, dtype=np.int64), np.array(assembly_map, dtype=np.int64)
 
 
 def assign_key_length(data, assembly_types):
