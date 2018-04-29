@@ -18,3 +18,6 @@ def test_integration():
 
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
     slab.solve()
+
+if __name__=="__main__":
+    test_integration()

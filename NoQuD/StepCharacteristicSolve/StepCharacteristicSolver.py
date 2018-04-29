@@ -86,6 +86,7 @@ class StepCharacteristicSolver:
                                                dtype=numpy.float64)  # initialize edge flux
         self.k_old = 1.0  # initialize eigenvalue
         self.k_new = 1.0  # initialize eigenvalue
+        self.spatial_sig_s_out = numpy.zeros((self.groups, self.core_mesh_length),dtype=numpy.float64)
         self.spatial_fission_old = numpy.zeros((self.groups, self.core_mesh_length),
                                                dtype=numpy.float64)  # initialize fission source
         self.spatial_fission_new = numpy.zeros((self.groups, self.core_mesh_length),
