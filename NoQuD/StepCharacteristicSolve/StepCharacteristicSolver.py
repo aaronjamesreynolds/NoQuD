@@ -278,10 +278,10 @@ class StepCharacteristicSolver:
 
                 # Reassign parameters to iterate again.
                 self.k_old = self.k_new
-                self.spatial_sig_s_out = numpy.zeros([self.groups, self.core_mesh_length])
-                self.flux_new = numpy.ones([self.groups, self.core_mesh_length])
+                self.spatial_sig_s_out = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)
+                self.flux_new = numpy.ones((self.groups, self.core_mesh_length), dtype=numpy.float64)
                 self.spatial_fission_old = self.spatial_fission_new
-                self.spatial_fission_new = numpy.zeros([self.groups, self.core_mesh_length])
+                self.spatial_fission_new = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)
                 self.exit1 = 0  # reenter flux iteration loop.
 
     # Plot and display results.
