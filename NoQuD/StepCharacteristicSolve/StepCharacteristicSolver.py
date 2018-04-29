@@ -79,7 +79,7 @@ class StepCharacteristicSolver:
                 for i in xrange(10):
                     if i + 1 <= len(self.ab) / 2 and j == self.core_mesh_length:
                         self.angular_flux_edge[k][j][i] = self.phi_R_old[k][i]
-                    elif i + 1 > len(ab) / 2 and j == 0:
+                    elif i + 1 > len(self.ab) / 2 and j == 0:
                         self.angular_flux_edge[k][j][i] = self.phi_L_old[k][i - 5]
 
     # With a given flux, the source from scattering is calculated.
@@ -227,9 +227,9 @@ class StepCharacteristicSolver:
             if abs(self.k_new - self.k_old) / self.k_old < 1.0E-5 and max(
                     self.spatial_fission_old[0][:] - self.spatial_fission_new[0][:]) < 1.0E-5:
 
-                self.exit2 = 1 # exit source iteration
-                self.flux_new = self.flux_new / (sum(self.flux_new)) # normalize flux
-                self.end = time() # timing end point
+                self.exit2 = 1  # exit source iteration
+                self.flux_new = self.flux_new / (numpy.sum(self.flux_new)) # normalize flux
+                self.end = time()  # timing end point
 
             else:
 
@@ -239,7 +239,7 @@ class StepCharacteristicSolver:
                 self.flux_new = numpy.ones([self.groups, self.core_mesh_length])
                 self.spatial_fission_old = self.spatial_fission_new
                 self.spatial_fission_new = numpy.zeros([self.groups, self.core_mesh_length])
-                self.exit1 = 0 # reenter flux iteration loop.
+                self.exit1 = 0  # reenter flux iteration loop.
 
     # Plot and display results.
     def results(self):
