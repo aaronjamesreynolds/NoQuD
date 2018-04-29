@@ -252,7 +252,7 @@ class StepCharacteristicSolver:
 
                 else:
                     self.flux_old = self.flux_new  # assign flux
-                    self.flux_new = numpy.zeros([self.groups, self.core_mesh_length])  # reset new_flux
+                    self.flux_new = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)  # reset new_flux
                     self.assign_boundary_condition()
 
             print 'Flux converged: {0} total iterations'.format(self.flux_iterations)
