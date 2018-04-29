@@ -18,7 +18,8 @@ def test_integration():
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
     slab.solve()
 
-def drafttst_heterogeneous_results():
+
+def test_step_characteristic_solve():
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
     file_path = os.path.join(current_directory, 'AI_test.csv')
@@ -32,7 +33,6 @@ def drafttst_heterogeneous_results():
     rows = []  # initialize a temporary storage variable
     elements = []  # initialize a temporary storage variable
 
-    current_directory = os.path.dirname(os.path.realpath(__file__))
     file_path = os.path.join(current_directory, 'validation_flux.csv')
 
     # Read in flux validation data.
@@ -59,15 +59,11 @@ def drafttst_heterogeneous_results():
 
     k_ref = float(k_ref[0])  # convert to float
 
-    flux_difference = abs(flux_ref - class_instance.flux_new)  # calculate difference in flus
-    k_difference = abs(k_ref - class_instance.k_new) # calculate difference in eigenvalue
+    flux_difference = abs(flux_ref - slab.flux_new)  # calculate difference in flux
+    k_difference = abs(k_ref - slab.k_new) # calculate difference in eigenvalue
 
     # If the fluxes are within 1e-5 and the eigenvalues are within 1e-4, we'll say it works.
-    if numpy.max(flux_difference) < 1e-5 and k_difference < 1e-4:
-        return "The Python solver and Matlab solver converge to roughly the same flux and k."
-    else:
-        return "The Python solver and Matlab solver don't converge to the same values, but the method does converge."
 
+    assert numpy.max(flux_difference) < 1e-5
+    assert k_difference < 1e-4
 
-if __name__=="__main__":
-    test_integration()
