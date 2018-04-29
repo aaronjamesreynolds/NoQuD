@@ -1,6 +1,7 @@
 from NoQuD.read_input_data import read_csv_input_file as read_csv
 from NoQuD.StepCharacteristicSolve.StepCharacteristicSolver import *
 import os
+import csv
 
 
 def test_integration():
@@ -11,13 +12,62 @@ def test_integration():
     current_directory = os.path.dirname(os.path.realpath(__file__))
     file_path = os.path.join(current_directory, 'AI_test.csv')
 
-    print file_path
+    sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
+    assembly_cells = read_csv.read_csv(file_path)
+
+    slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
+    slab.solve()
+
+def drafttst_heterogeneous_results():
+
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(current_directory, 'AI_test.csv')
 
     sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
     assembly_cells = read_csv.read_csv(file_path)
 
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
     slab.solve()
+
+    rows = []  # initialize a temporary storage variable
+    elements = []  # initialize a temporary storage variable
+
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(current_directory, 'validation_flux.csv')
+
+    # Read in flux validation data.
+    with open(file_path, 'r') as file:
+        reader = csv.reader(file, delimiter=',')
+        for row in reader:
+            rows.append(row[:1])
+            for col in row:
+                elements.append(col)
+
+    number_rows = len(rows)
+    number_elements = len(elements)
+
+    # Reshape matrix to correct format.
+    flux_ref = numpy.reshape(elements, [number_rows, number_elements / number_rows]).astype(numpy.float)
+
+    file_path = os.path.join(current_directory, 'validation_k.csv')
+
+    # Read in eigenvalue validation data.
+    with open(file_path, 'r') as file:
+        reader = csv.reader(file, delimiter=',')
+        for row in reader:
+            k_ref = row
+
+    k_ref = float(k_ref[0])  # convert to float
+
+    flux_difference = abs(flux_ref - class_instance.flux_new)  # calculate difference in flus
+    k_difference = abs(k_ref - class_instance.k_new) # calculate difference in eigenvalue
+
+    # If the fluxes are within 1e-5 and the eigenvalues are within 1e-4, we'll say it works.
+    if numpy.max(flux_difference) < 1e-5 and k_difference < 1e-4:
+        return "The Python solver and Matlab solver converge to roughly the same flux and k."
+    else:
+        return "The Python solver and Matlab solver don't converge to the same values, but the method does converge."
+
 
 if __name__=="__main__":
     test_integration()
