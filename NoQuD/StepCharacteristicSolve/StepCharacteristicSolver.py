@@ -275,6 +275,7 @@ class StepCharacteristicSolver(object):
                 self.exit1 = 0  # reenter flux iteration loop.
 
     # Plot and display results.
+    # Note: doesn't work with numba
     def results(self):
 
         print 'Eigenvalue: {0}'.format(self.k_new)
