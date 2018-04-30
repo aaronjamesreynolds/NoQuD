@@ -75,8 +75,8 @@ def read_csv(filename):
     print "File loaded."
 
     # Return relevant parameters.
-    return sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, \
-           assembly_size, assembly_cells
+    return sig_t, sig_sin, sig_sout, sig_f, nu, chi, np.int64(groups), np.int64(cells), cell_size, \
+           assembly_map, material, assembly_size, assembly_cells
 
 
 def assign_cross_sections(data, groups, unique_materials):
