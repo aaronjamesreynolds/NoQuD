@@ -56,7 +56,7 @@ def read_csv(filename):
         groups = int(data.iloc[4, 1])  # number of neutron energy groups
         unique_materials = int(data.iloc[5, 1])  # number of unique materials
         assembly_cells = int(cells / assemblies)  # the number of cells per assembly.
-        cell_size = assemblies * assembly_size / cells  # length of each cell
+        cell_size = np.float64(assemblies * assembly_size) / np.float64(cells)  # length of each cell
     except IndexError:
         raise IndexError("The input file may have incorrect formatting. Check these fields: \n"
                          "Number of Assembly Types, Number of Assemblies, Assembly Size, Number of Total Cells, Number"
