@@ -99,9 +99,6 @@ class StepCharacteristicSolver(object):
         self.flux_iterations = 0  # iteration counter
         self.source_iterations = 0  # iteration counter
 
-        # Make material map
-        #self.material_map()
-
         # Form spatial matrix for in scatter from other groups.
         self.form_scatter_source()
 
@@ -142,6 +139,7 @@ class StepCharacteristicSolver(object):
                     self.spatial_fission_new[k][i] = self.spatial_fission_new[k][i] + self.fission_source_dx
 
     # Generate a standard pin assembly material map of a 2 assembly problem.
+    # Note: not used anymore
     def material_map(self):
 
         for i in xrange(8):
