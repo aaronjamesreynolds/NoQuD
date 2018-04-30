@@ -15,7 +15,7 @@ def test_integration():
     sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
     assembly_cells = read_csv.read_csv(file_path)
 
-    slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
+    slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
     slab.solve()
 
 
@@ -27,7 +27,7 @@ def test_step_characteristic_solve():
     sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
     assembly_cells = read_csv.read_csv(file_path)
 
-    slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi)
+    slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
     slab.solve()
 
     rows = []  # initialize a temporary storage variable
@@ -67,3 +67,22 @@ def test_step_characteristic_solve():
     assert numpy.max(flux_difference) < 1e-5
     assert k_difference < 1e-4
 
+
+def test_more_than_two_assemblies():
+
+    """" This tests to see if data extracted from the input file with more than two assemblies can be used to create a
+    StepCharacteristicSolver object without error. """
+
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(current_directory, 'AI_3plus_test.csv')
+
+    sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
+    assembly_cells = read_csv.read_csv(file_path)
+
+    slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
+    slab.solve()
+
+if __name__ =="__main__":
+    test_integration()
+    test_step_characteristic_solve()
+    test_more_than_two_assemblies()
