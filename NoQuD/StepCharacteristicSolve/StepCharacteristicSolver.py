@@ -46,7 +46,7 @@ spec = [
 class StepCharacteristicSolver(object):
 
     # Initialize and assign variables.
-    def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi, groups, material):
+    def __init__(self, sig_t, sig_s_in, sig_s_out, sig_f, nu, chi, groups, cells, material):
 
         # Nuclear data
         self.sig_t = sig_t  # total cross section
@@ -66,7 +66,7 @@ class StepCharacteristicSolver(object):
 
         # Problem geometry parameters
         self.groups = groups  # energy groups in problem
-        self.core_mesh_length = 128  # number of intervals
+        self.core_mesh_length = cells  # number of intervals
         self.dx = 20.0 / self.core_mesh_length  # discretization in length
         self.dmu = 2 / len(self.ab) # discretization in angle
 
