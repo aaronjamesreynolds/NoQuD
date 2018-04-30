@@ -18,7 +18,6 @@ def test_integration():
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
     slab.solve()
 
-
 def test_step_characteristic_solve():
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -82,7 +81,7 @@ def test_more_than_two_assemblies():
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
     slab.solve()
 
-    # If one wants to inspect the data, uncomment these lines.
+    # If one wants to inspect the data, uncomment the lines below.
 #     x = numpy.arange(0.0, 10.0*len(assembly_map), 10.0*len(assembly_map) / cells)
 #     plt.plot(x, slab.flux_new[0][:])
 #     plt.plot(x, slab.flux_new[1][:])
