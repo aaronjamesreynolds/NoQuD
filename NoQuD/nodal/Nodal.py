@@ -27,7 +27,7 @@ class Nodal(object):
                                  [0, 0, -12, 0, -40],
                                  [0, 0, 0, -60, 0],
                                  [0, 0, 0, 0, -140],
-                                 [0, 1, -3, 6, -10]), dtype=np.float32)
+                                 [0, 1, -3, 6, -10]), dtype=np.float64)
 
         self.diffusion_constant = diffusion_constant
         self.sigma_r = sigma_r
@@ -37,7 +37,7 @@ class Nodal(object):
         self.nodes = nodes
         self.order_of_legendre_poly = 5
         self.linear_system = np.zeros((self.groups, self.order_of_legendre_poly * self.nodes,
-                                       self.order_of_legendre_poly * self.nodes), dtype=np.float32)
+                                       self.order_of_legendre_poly * self.nodes), dtype=np.float64)
         self.build_linear_system()
 
     def lhs_boundary_condition(self):
@@ -78,12 +78,48 @@ class Nodal(object):
                     rhs2 = pow(-1, k) * f[i][2 * j + 1]
                     self.linear_system[i][self.nodes + 1 + j][self.order_of_legendre_poly * (j + 1) + k] = rhs2
 
+    def balance_condition(self):
+
+        for i in xrange(0, self.groups):
+            for j in xrange(0, self.nodes):
+                for k in xrange(0, self.order_of_legendre_poly):
+
+                    self.linear_system[i][2 * self.nodes + j][5 * j + k] = self.repeated_coefficients[2][k]*\
+                                                                       self.diffusion_constant[i][j]/\
+                                                                       self.cell_size[i][j]**2
+                self.linear_system[i][2 * self.nodes + j][5 * j] = self.sigma_r[i][j]
+
+    def first_weighted_moment(self):
+
+        for i in xrange(0, self.groups):
+            for j in xrange(0, self.nodes):
+                for k in xrange(0, self.order_of_legendre_poly):
+
+                    self.linear_system[i][3 * self.nodes + j][5 * j + k] = self.repeated_coefficients[3][k]*\
+                                                                       self.diffusion_constant[i][j]/\
+                                                                       self.cell_size[i][j]**2
+                self.linear_system[i][3 * self.nodes + j][5 * j + 1] = self.sigma_r[i][j]
+
+    def second_weighted_moment(self):
+
+        for i in xrange(0, self.groups):
+            for j in xrange(0, self.nodes):
+                for k in xrange(0, self.order_of_legendre_poly):
+
+                    self.linear_system[i][4 * self.nodes + j][5 * j + k] = self.repeated_coefficients[4][k]*\
+                                                                       self.diffusion_constant[i][j]/\
+                                                                       self.cell_size[i][j]**2
+                self.linear_system[i][4 * self.nodes + j][5 * j + 2] = self.sigma_r[i][j]
+
     def build_linear_system(self):
 
         self.lhs_boundary_condition()
         self.rhs_boundary_condition()
         self.flux_interface_condition()
         self.current_interface_condition()
+        self.balance_condition()
+        self.first_weighted_moment()
+        self.second_weighted_moment()
 
 if __name__ == "__main__":
 
