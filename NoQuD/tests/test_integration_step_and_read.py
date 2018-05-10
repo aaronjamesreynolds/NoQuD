@@ -10,7 +10,7 @@ def test_integration():
     object without error. """
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(current_directory, 'testing_files/AI_test.csv')
+    file_path = os.path.join(current_directory, 'testing_files/assembly_info_test.csv')
 
     sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
     assembly_cells = read_csv.read_csv(file_path)
@@ -21,7 +21,7 @@ def test_integration():
 def test_step_characteristic_solve():
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(current_directory, 'testing_files/AI_test.csv')
+    file_path = os.path.join(current_directory, 'testing_files/assembly_info_test.csv')
 
     sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
     assembly_cells = read_csv.read_csv(file_path)
@@ -73,7 +73,7 @@ def test_more_than_two_assemblies():
     StepCharacteristicSolver object without error. """
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(current_directory, 'testing_files/AI_3plus_test.csv')
+    file_path = os.path.join(current_directory, 'testing_files/assembly_info_3plus_test.csv')
 
     sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, assembly_map, material, assembly_size, \
     assembly_cells = read_csv.read_csv(file_path)
@@ -91,7 +91,7 @@ def test_more_than_two_assemblies():
 #     plt.show()
 #     print "Multiplication Factor: {0}".format(slab.k_new)
 #
-if __name__ =="__main__":
-    test_integration()
-    test_step_characteristic_solve()
-    test_more_than_two_assemblies()
+# if __name__ =="__main__":
+#     test_integration()
+#     test_step_characteristic_solve()
+#     test_more_than_two_assemblies()
