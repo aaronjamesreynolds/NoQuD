@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from noqud.read_input_data.read_csv_input_file import assign_key_length, assign_cross_sections, create_material_map
+from NoQuD.read_input_data.read_csv_input_file import assign_key_length, assign_cross_sections, create_material_map
 import pandas as pd
 import numpy as np
 import os

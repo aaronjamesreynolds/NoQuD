@@ -1,5 +1,5 @@
-from noqud.read_input_data import read_csv_input_file as read_csv
-from noqud.step_characteristic_solve.StepCharacteristicSolver import *
+from NoQuD.read_input_data import read_csv_input_file as read_csv
+from NoQuD.step_characteristic_solve.StepCharacteristicSolver import *
 import os
 import csv
 
