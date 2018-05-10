@@ -2,6 +2,12 @@ from codecs import open
 from os import path
 import sys
 
+try:
+    from setuptools import setup, find_packages
+except ImportError:
+    from distutils.core import setup
+
+
 here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'noqud', '_version.py')) as version_file:
@@ -24,6 +30,10 @@ except (ImportError, OSError, IOError):
 
 install_requires = [
     'numpy',
+    'numpy',
+    'pandas',
+    'matplotlib',
+    'numba',
 ]
 
 tests_require = [
@@ -35,32 +45,26 @@ needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 setup_requires = ['pytest-runner'] if needs_pytest else []
 
 setup(
-    name='compphys',
+    name='noqud',
     version=__version__,
-    description='Effective Computation in Physics',
+    description='Step Characteristic and QD Nodal Solver for neutron transport',
     long_description=long_description,
-    author='Anthony Scopatz and Kathryn D. Huff',
-    author_email='koolkatz@gmail.com',
-    url='http://physics.codes',
+    author='Aaron J Reynolds',
+    author_email='reynolaa@oregonstate.edu',
+    #url='http://physics.codes',
     classifiers=[
-        'License :: OSI Approved :: BSD License',
-        'Intended Audience :: Developers',
+        'Intended Audience :: Nuclear Engineering',
         'Intended Audience :: Science/Research',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 2.7',
     ],
     license='BSD-3-Clause',
     install_requires=install_requires,
     tests_require=tests_require,
-    python_requires='>=3',
+    python_requires='2.7',
     setup_requires=setup_requires,
     zip_safe=False,
-    packages=['compphys', 'compphys.more', 'compphys.tests'],
-    package_dir={
-        'compphys': 'compphys',
-        'compphys.more': 'compphys/more',
-        'compphys.tests': 'compphys/tests',
-        },
+    packages=find_packages()
     include_package_data=True,
 )
 
