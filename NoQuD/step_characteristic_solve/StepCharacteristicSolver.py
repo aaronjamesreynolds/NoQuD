@@ -22,7 +22,7 @@ spec = [
     ('dmu', float64),
     ('flux_new', float64[:, :]),
     ('flux_old', float64[:, :]),
-    ('edge_flux', float64[:, :])
+    ('edge_flux', float64[:, :]),
     ('phi_L_old', float64[:, :]),
     ('phi_R_old', float64[:, :]),
     ('angular_flux_edge', float64[:, :, :]),

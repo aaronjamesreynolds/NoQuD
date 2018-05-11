@@ -91,7 +91,7 @@ def test_more_than_two_assemblies():
 #     plt.show()
 #     print "Multiplication Factor: {0}".format(slab.k_new)
 #
-# if __name__ =="__main__":
-#     test_integration()
-#     test_step_characteristic_solve()
-#     test_more_than_two_assemblies()
+if __name__ =="__main__":
+    test_integration()
+    test_step_characteristic_solve()
+    test_more_than_two_assemblies()
