@@ -18,6 +18,7 @@ def test_integration():
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
     slab.solve()
 
+
 def test_step_characteristic_solve():
 
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -81,17 +82,17 @@ def test_more_than_two_assemblies():
     slab = StepCharacteristicSolver(sig_t, sig_sin, sig_sout, sig_f, nu, chi, groups, cells, cell_size, material)
     slab.solve()
 
-    # If one wants to inspect the data, uncomment the lines below.
+#     #If one wants to inspect the data, uncomment the lines below.
 #     x = numpy.arange(0.0, 10.0*len(assembly_map), 10.0*len(assembly_map) / cells)
-#     plt.plot(x, slab.flux_new[0][:])
-#     plt.plot(x, slab.flux_new[1][:])
+#     plt.plot(x, slab.eddington_factors[0][:])
+#     plt.plot(x, slab.eddington_factors[1][:])
 #     plt.xlabel('Position [cm]')
 #     plt.ylabel('Flux [s^-1 cm^-2]')
 #     plt.title('Neutron Flux')
 #     plt.show()
 #     print "Multiplication Factor: {0}".format(slab.k_new)
-#
-if __name__ =="__main__":
-    test_integration()
-    test_step_characteristic_solve()
-    test_more_than_two_assemblies()
+# #
+# if __name__ =="__main__":
+#     test_integration()
+#     test_step_characteristic_solve()
+#     test_more_than_two_assemblies()

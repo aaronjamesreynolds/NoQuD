@@ -27,7 +27,7 @@ spec = [
     ('phi_R_old', float64[:, :]),
     ('angular_flux_edge', float64[:, :, :]),
     ('angular_flux_center', float64[:, :, :]),
-    ('eddington_factor', float64[:, :]),
+    ('eddington_factors', float64[:, :]),
     ('k_old', float64),
     ('k_new', float64),
     ('spatial_fission_old', float64[:, :]),
@@ -176,7 +176,7 @@ class StepCharacteristicSolver(object):
         for k in xrange(self.groups):
             for i in xrange(self.core_mesh_length):
                 for x in xrange(len(self.ab)):
-                    self.eddington_factors[k][i] = self.eddington_factors[k][i] + self.ab[x] *\
+                    self.eddington_factors[k][i] = self.eddington_factors[k][i] + self.ab[x] ** 2 *\
                                                    self.angular_flux_center[k][i][x] * self.weights[x]\
                                                    / self.flux_new[k][i]
 
@@ -280,9 +280,9 @@ class StepCharacteristicSolver(object):
                     self.spatial_fission_old[0][:] - self.spatial_fission_new[0][:]) < 1.0E-5:
 
                 self.exit2 = 1  # exit source iteration
+                self.calculate_eddington_factors()
                 self.flux_new = self.flux_new / (numpy.sum(self.flux_new)) # normalize flux
                 self.calculate_scalar_edge_flux()
-                self.calculate_eddington_factors()
 
             else:
 
