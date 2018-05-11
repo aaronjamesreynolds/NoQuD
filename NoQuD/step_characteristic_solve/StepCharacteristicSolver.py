@@ -166,12 +166,10 @@ class StepCharacteristicSolver(object):
 
     def calculate_scalar_edge_flux(self):
 
-        self.angular_flux_edge = numpy.zeros((self.groups, self.core_mesh_length + 1, len(self.ab)),
-                                             dtype=numpy.float64)
         for k in xrange(self.groups):
-            for i in xrange(self.core_mesh_length):
+            for i in xrange(self.core_mesh_length+1):
                 for x in xrange(len(self.ab)):
-                    self.flux_new[k][i] = self.flux_new[k][i] + self.weights[x] * self.angular_flux_center[k][i][x]
+                    self.edge_flux[k][i] = self.edge_flux[k][i] + self.weights[x] * self.angular_flux_edge[k][i][x]
 
     # Reflects given angular fluxes at the boundary across the mu = 0 axis.
     def assign_boundary_condition(self):
@@ -274,6 +272,7 @@ class StepCharacteristicSolver(object):
 
                 self.exit2 = 1  # exit source iteration
                 self.flux_new = self.flux_new / (numpy.sum(self.flux_new)) # normalize flux
+                self.calculate_scalar_edge_flux()
 
             else:
 
