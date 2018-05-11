@@ -22,6 +22,7 @@ spec = [
     ('dmu', float64),
     ('flux_new', float64[:, :]),
     ('flux_old', float64[:, :]),
+    ('edge_flux', float64[:, :])
     ('phi_L_old', float64[:, :]),
     ('phi_R_old', float64[:, :]),
     ('angular_flux_edge', float64[:, :, :]),
@@ -73,6 +74,7 @@ class StepCharacteristicSolver(object):
         # Set initial values
         self.flux_new = numpy.ones((self.groups, self.core_mesh_length), dtype=numpy.float64)  # initialize flux
         self.flux_old = numpy.ones((self.groups, self.core_mesh_length), dtype=numpy.float64)  # initialize flux
+        self.edge_flux = numpy.ones((self.groups, self.core_mesh_length + 1), dtype=numpy.float64)
         self.phi_L_old = numpy.ones((self.groups, len(self.ab) / 2),
                                     dtype=numpy.float64)  # initialize left boundary condition
         self.phi_R_old = numpy.ones((self.groups, len(self.ab) / 2),
@@ -157,6 +159,15 @@ class StepCharacteristicSolver(object):
     # With given angular fluxes, calculate the scalar flux using a quadrature set.
     def calculate_scalar_flux(self):
 
+        for k in xrange(self.groups):
+            for i in xrange(self.core_mesh_length):
+                for x in xrange(len(self.ab)):
+                    self.flux_new[k][i] = self.flux_new[k][i] + self.weights[x] * self.angular_flux_center[k][i][x]
+
+    def calculate_scalar_edge_flux(self):
+
+        self.angular_flux_edge = numpy.zeros((self.groups, self.core_mesh_length + 1, len(self.ab)),
+                                             dtype=numpy.float64)
         for k in xrange(self.groups):
             for i in xrange(self.core_mesh_length):
                 for x in xrange(len(self.ab)):
