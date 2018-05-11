@@ -27,6 +27,7 @@ spec = [
     ('phi_R_old', float64[:, :]),
     ('angular_flux_edge', float64[:, :, :]),
     ('angular_flux_center', float64[:, :, :]),
+    ('eddington_factor', float64[:, :]),
     ('k_old', float64),
     ('k_new', float64),
     ('spatial_fission_old', float64[:, :]),
@@ -83,6 +84,7 @@ class StepCharacteristicSolver(object):
                                              dtype=numpy.float64)  # initialize edge flux
         self.angular_flux_center = numpy.zeros((self.groups, self.core_mesh_length, len(self.ab)),
                                                dtype=numpy.float64)  # initialize edge flux
+        self.eddington_factors = numpy.zeros((self.groups, self.core_mesh_length), dtype=numpy.float64)
         self.k_old = 1.0  # initialize eigenvalue
         self.k_new = 1.0  # initialize eigenvalue
         self.spatial_sig_s_out = numpy.zeros((self.groups, self.core_mesh_length),dtype=numpy.float64)
@@ -91,8 +93,6 @@ class StepCharacteristicSolver(object):
         self.spatial_fission_new = numpy.zeros((self.groups, self.core_mesh_length),
                                                dtype=numpy.float64)  # initialize fission source
         self.material = material  # material map
-        # self.material = numpy.array([int(2)] * int(self.core_mesh_length), dtype=numpy.int64)  # material map
-        # self.E = numpy.zeros([self.groups, self.core_mesh_length])  # initialize eddington factors
         self.fission_source_dx = 0.0
 
         # Solver metrics
@@ -170,6 +170,15 @@ class StepCharacteristicSolver(object):
             for i in xrange(self.core_mesh_length+1):
                 for x in xrange(len(self.ab)):
                     self.edge_flux[k][i] = self.edge_flux[k][i] + self.weights[x] * self.angular_flux_edge[k][i][x]
+
+    def calculate_eddington_factors(self):
+
+        for k in xrange(self.groups):
+            for i in xrange(self.core_mesh_length):
+                for x in xrange(len(self.ab)):
+                    self.eddington_factors[k][i] = self.eddington_factors[k][i] + self.ab[x] *\
+                                                   self.angular_flux_center[k][i][x] * self.weights[x]\
+                                                   / self.flux_new[k][i]
 
     # Reflects given angular fluxes at the boundary across the mu = 0 axis.
     def assign_boundary_condition(self):
@@ -273,6 +282,7 @@ class StepCharacteristicSolver(object):
                 self.exit2 = 1  # exit source iteration
                 self.flux_new = self.flux_new / (numpy.sum(self.flux_new)) # normalize flux
                 self.calculate_scalar_edge_flux()
+                self.calculate_eddington_factors()
 
             else:
 
