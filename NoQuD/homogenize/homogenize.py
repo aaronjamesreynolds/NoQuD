@@ -1,6 +1,7 @@
 import numpy as np
 from NoQuD.read_input_data import read_csv_input_file as read_csv
 from NoQuD.step_characteristic_solve.StepCharacteristicSolver import *
+import os
 
 class Homogenize():
 
@@ -44,10 +45,19 @@ class Homogenize():
                                                  self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
                 self.sig_r_h = self.sig_t_h - self.sig_sin_h
 
+    def calculate_discontinuity_factors(self):
 
-     def calculate_discontinuity_factors(self):
+        for group in xrange(self.groups):
+            self.average_flux[group] = np.mean(self.slab.flux_new[group][:])
+            self.discontinuity_factor_left = self.slab.edge_flux[group][self.cells]/self.average_flux[group]
+            self.discontinuity_factor_right = self.slab.edge_flux[group][0]/self.average_flux[group]
 
-         for group in xrange(self.groups):
-             self.average_flux[group] = np.mean(self.slab.flux_new[group][:])
-             self.discontinuity_factor_left = self.slab.edge_flux[group][self.cells+1]/self.average_flux[group]
-             self.discontinuity_factor_right = self.slab.edge_flux[group][0]/self.average_flux[group]
+    def perform_homogenization(self):
+
+        self.calculate_homogenized_nuclear_data()
+        self.calculate_discontinuity_factors()
+
+if __name__ == '__main__':
+    test = Homogenize('assembly_info_single_test.csv')
+    test.perform_homogenization()
+    print test.sig_sin_h
