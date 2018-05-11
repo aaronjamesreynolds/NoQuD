@@ -14,6 +14,11 @@ class Homogenize():
 
         self.slab = StepCharacteristicSolver(self.sig_t, self.sig_sin, self.sig_sout, self.sig_f, self.nu, self.chi,
                                              self.groups, self.cells, self.cell_size, self.material)
+        self.slab.solve()
+        self.average_flux = np.zeros(2)
+        self.discontinuity_factor_left = np.zeros(2)
+        self.discontinuity_factor_right = np.zeros(2)
+
 
         self.sig_t_h = np.zeros(2)
         self.sig_sin_h = np.zeros(2)
@@ -23,8 +28,6 @@ class Homogenize():
         self.sig_r_h = np.zeros(2)
 
     def calculate_homogenized_nuclear_data(self):
-
-        self.slab.solve()
 
         for group in xrange(self.groups):
             for cell in xrange(self.cells):
@@ -39,3 +42,12 @@ class Homogenize():
                 self.eddington_factor_h[group] = self.eddington_factor_h[group] + \
                                                  self.slab.eddington_factors[group][cell] * \
                                                  self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
+                self.sig_r_h = self.sig_t_h - self.sig_sin_h
+
+
+     def calculate_discontinuity_factors(self):
+
+         for group in xrange(self.groups):
+             self.average_flux[group] = np.mean(self.slab.flux_new[group][:])
+             self.discontinuity_factor_left = self.slab.edge_flux[group][self.cells+1]/self.average_flux[group]
+             self.discontinuity_factor_right = self.slab.edge_flux[group][0]/self.average_flux[group]
