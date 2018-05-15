@@ -17,31 +17,31 @@ class HomogenizeAssembly:
         self.slab = StepCharacteristicSolver(self.sig_t, self.sig_sin, self.sig_sout, self.sig_f, self.nu, self.chi,
                                              self.groups, self.cells, self.cell_size, self.material)
         self.slab.solve()
-        self.average_flux = np.zeros(2)
-        self.discontinuity_factor_left = np.zeros(2)
-        self.discontinuity_factor_right = np.zeros(2)
+        self.average_flux = np.zeros((2, 1))
+        self.discontinuity_factor_left = np.zeros((2, 1))
+        self.discontinuity_factor_right = np.zeros((2, 1))
 
-
-        self.sig_t_h = np.zeros(2)
-        self.sig_sin_h = np.zeros(2)
-        self.sig_sout_h = np.zeros(2)
-        self.sig_f_h = np.zeros(2)
-        self.eddington_factor_h = np.zeros(2)
-        self.sig_r_h = np.zeros(2)
+        self.sig_t_h = np.zeros((2, 1))
+        self.sig_sin_h = np.zeros((2, 1))
+        self.sig_sout_h = np.zeros((2, 1))
+        self.sig_f_h = np.zeros((2, 1))
+        self.eddington_factor_h = np.zeros((2, 1))
+        self.sig_r_h = np.zeros((2, 1))
+        self.perform_homogenization()
 
     def calculate_homogenized_nuclear_data(self):
 
         for group in xrange(self.groups):
             for cell in xrange(self.cells):
-                self.sig_t_h[group] = self.sig_t_h[group] + self.sig_t[group][self.material[cell]]\
+                self.sig_t_h[group][0] = self.sig_t_h[group][0] + self.sig_t[group][self.material[cell]]\
                                       * self.slab.flux_new[group][cell]/np.sum(self.slab.flux_new[group][:])
-                self.sig_sin_h[group] = self.sig_sin_h[group] + self.sig_sin[group][self.material[cell]] \
+                self.sig_sin_h[group][0] = self.sig_sin_h[group][0] + self.sig_sin[group][self.material[cell]] \
                                         * self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
-                self.sig_sout_h[group] = self.sig_sout_h[group] + self.sig_sout[group][self.material[cell]] \
+                self.sig_sout_h[group][0] = self.sig_sout_h[group][0] + self.sig_sout[group][self.material[cell]] \
                                       * self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
-                self.sig_f_h[group] = self.sig_f_h[group] + self.sig_f[group][self.material[cell]] \
+                self.sig_f_h[group][0] = self.sig_f_h[group][0] + self.sig_f[group][self.material[cell]] \
                                       * self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
-                self.eddington_factor_h[group] = self.eddington_factor_h[group] + \
+                self.eddington_factor_h[group][0] = self.eddington_factor_h[group][0] + \
                                                  self.slab.eddington_factors[group][cell] * \
                                                  self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
                 self.sig_r_h = self.sig_t_h - self.sig_sin_h
@@ -49,9 +49,9 @@ class HomogenizeAssembly:
     def calculate_discontinuity_factors(self):
 
         for group in xrange(self.groups):
-            self.average_flux[group] = np.mean(self.slab.flux_new[group][:])
-            self.discontinuity_factor_left = self.slab.edge_flux[group][self.cells]/self.average_flux[group]
-            self.discontinuity_factor_right = self.slab.edge_flux[group][0]/self.average_flux[group]
+            self.average_flux[group] = np.mean(self.slab.flux_old[group][:])
+            self.discontinuity_factor_left[group] = self.slab.edge_flux[group][self.cells]/self.average_flux[group]
+            self.discontinuity_factor_right[group] = self.slab.edge_flux[group][0]/self.average_flux[group]
 
     def perform_homogenization(self):
 
@@ -89,13 +89,22 @@ class HomogenizeGlobe:
         self.sig_sout_g = np.zeros((self.groups, len(self.assembly_map)))
         self.sig_f_g = np.zeros((self.groups, len(self.assembly_map)))
         self.f_g = np.zeros((self.groups, len(self.assembly_map)))
+        self.build_assembly_data()
 
-    # initialize matrices for global map based on dimension of single_assembly_input_files
-
-
+    def build_assembly_data(self):
+        for index in xrange(1, len(self.single_assembly_input_files)):
+            assembly = HomogenizeAssembly(self.single_assembly_input_files[index])
+            self.eddington_factor_a[:, index-1] = assembly.eddington_factor_h[:, 0]
+            self.sig_r_a[:, index - 1] = assembly.sig_r_h[:, 0]
+            self.sig_t_a[:, index - 1] = assembly.sig_t_h[:, 0]
+            self.sig_sin_a[:, index - 1] = assembly.sig_sin_h[:, 0]
+            self.sig_sout_a[:, index - 1] = assembly.sig_sout_h[:, 0]
+            self.sig_f_a[:, index - 1] = assembly.sig_f_h[:, 0]
+            self.f_a[:, (index-1)*2] = assembly.discontinuity_factor_left[:, 0]
+            self.f_a[:, (index-1)*2 + 1] = assembly.discontinuity_factor_right[:, 0]
 
 
 if __name__ == '__main__':
     test = HomogenizeAssembly('assembly_info_single_test.csv')
-    test.perform_homogenization()
     print test.sig_sin_h
+    test = HomogenizeGlobe(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test.csv'])
