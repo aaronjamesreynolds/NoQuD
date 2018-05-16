@@ -79,7 +79,7 @@ class HomogenizeGlobe:
         self.sig_sin_a = np.zeros((self.groups, len(single_assembly_input_files)-1))
         self.sig_sout_a = np.zeros((self.groups, len(single_assembly_input_files)-1))
         self.sig_f_a = np.zeros((self.groups, len(single_assembly_input_files)-1))
-        self.f_a = np.zeros((self.groups, len(single_assembly_input_files)-1))
+        self.f_a = np.zeros((self.groups, 2*(len(single_assembly_input_files)-1)))
 
         # 'g' stand for global. The variables below will hold the homogenized nuclear data for each node.
         self.eddington_factor_g = np.zeros((self.groups, len(self.assembly_map)))
@@ -88,20 +88,31 @@ class HomogenizeGlobe:
         self.sig_sin_g = np.zeros((self.groups, len(self.assembly_map)))
         self.sig_sout_g = np.zeros((self.groups, len(self.assembly_map)))
         self.sig_f_g = np.zeros((self.groups, len(self.assembly_map)))
-        self.f_g = np.zeros((self.groups, len(self.assembly_map)))
+        self.f_g = np.zeros((self.groups, 2*len(self.assembly_map)))
         self.build_assembly_data()
+        self.build_global_data()
 
     def build_assembly_data(self):
-        for index in xrange(1, len(self.single_assembly_input_files)):
-            assembly = HomogenizeAssembly(self.single_assembly_input_files[index])
+        for index in xrange(len(self.single_assembly_input_files)-1):
+            assembly = HomogenizeAssembly(self.single_assembly_input_files[index+1])
             self.eddington_factor_a[:, index-1] = assembly.eddington_factor_h[:, 0]
-            self.sig_r_a[:, index - 1] = assembly.sig_r_h[:, 0]
-            self.sig_t_a[:, index - 1] = assembly.sig_t_h[:, 0]
-            self.sig_sin_a[:, index - 1] = assembly.sig_sin_h[:, 0]
-            self.sig_sout_a[:, index - 1] = assembly.sig_sout_h[:, 0]
-            self.sig_f_a[:, index - 1] = assembly.sig_f_h[:, 0]
-            self.f_a[:, (index-1)*2] = assembly.discontinuity_factor_left[:, 0]
-            self.f_a[:, (index-1)*2 + 1] = assembly.discontinuity_factor_right[:, 0]
+            self.sig_r_a[:, index] = assembly.sig_r_h[:, 0]
+            self.sig_t_a[:, index] = assembly.sig_t_h[:, 0]
+            self.sig_sin_a[:, index] = assembly.sig_sin_h[:, 0]
+            self.sig_sout_a[:, index] = assembly.sig_sout_h[:, 0]
+            self.sig_f_a[:, index] = assembly.sig_f_h[:, 0]
+            self.f_a[:, index*2] = assembly.discontinuity_factor_left[:, 0]
+            self.f_a[:, index*2 + 1] = assembly.discontinuity_factor_right[:, 0]
+
+    def build_global_data(self):
+        for node in xrange(len(self.assembly_map)):
+            self.eddington_factor_g[:, node] = self.eddington_factor_a[:, self.assembly_map[node] - 1]
+            self.sig_r_g[:, node] = self.sig_r_a[:, self.assembly_map[node] - 1]
+            self.sig_t_g[:, node] = self.sig_t_a[:, self.assembly_map[node] - 1]
+            self.sig_sin_g[:, node] = self.sig_sin_a[:, self.assembly_map[node] - 1]
+            self.sig_sout_g[:, node] = self.sig_sout_a[:, self.assembly_map[node] - 1]
+            self.sig_f_g[:, node] = self.sig_f_a[:, self.assembly_map[node] - 1]
+            self.f_g[:, 2*node:2*node + 2] = self.f_a[:, 2*(self.assembly_map[node] - 1):2*self.assembly_map[node] - 1]
 
 
 if __name__ == '__main__':
