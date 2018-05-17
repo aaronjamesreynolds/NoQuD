@@ -27,7 +27,7 @@ class Nodal(object):
                                  [0, 0, -12, 0, -40],
                                  [0, 0, 0, -60, 0],
                                  [0, 0, 0, 0, -140],
-                                 [0, 1, -3, 6, -10]), dtype=np.float64)
+                                 [0, -1, 3, -6, 10]), dtype=np.float64)
 
         self.diffusion_constant = diffusion_constant
         self.sigma_r = sigma_r

@@ -49,7 +49,7 @@ class HomogenizeAssembly:
     def calculate_discontinuity_factors(self):
 
         for group in xrange(self.groups):
-            self.average_flux[group] = np.mean(self.slab.flux_old[group][:])
+            self.average_flux[group] = np.mean(self.slab.edge_flux[group, :])
             self.discontinuity_factor_left[group] = self.slab.edge_flux[group][self.cells]/self.average_flux[group]
             self.discontinuity_factor_right[group] = self.slab.edge_flux[group][0]/self.average_flux[group]
 

@@ -11,9 +11,10 @@ class NodalSolve:
         # files for each unique assembly.
 
         self.homogenized_problem = HomogenizeGlobe(assembly_input_files)
-        self.assembly_cell_sizes = self.homogenized_problem.cell_size*np.ones((self.homogenized_problem.groups,
+        self.assembly_cell_sizes = self.homogenized_problem.assembly_size*np.ones((self.homogenized_problem.groups,
                                                                           len(self.homogenized_problem.assembly_map)))
-        self.nodal_data = Nodal(self.homogenized_problem.eddington_factor_g, self.homogenized_problem.sig_r_g,
+        eddington_over_sig_t = np.divide(self.homogenized_problem.eddington_factor_g, self.homogenized_problem.sig_t_g)
+        self.nodal_data = Nodal(eddington_over_sig_t, self.homogenized_problem.sig_r_g,
                                 self.assembly_cell_sizes, self.homogenized_problem.f_g,
                                 self.homogenized_problem.groups, len(self.homogenized_problem.assembly_map))
         self.order = self.nodal_data.order_of_legendre_poly
@@ -23,19 +24,15 @@ class NodalSolve:
         self.linear_system = self.nodal_data.linear_system
         self.fast_system = self.linear_system[0, :, :]
         self.slow_system = self.linear_system[1, :, :]
-        self.fission_source_old = np.zeros((self.homogenized_problem.groups,
-                                            self.nodes * self.order))
-        self.scatter_source_old = np.zeros((self.homogenized_problem.groups,
-                                            self.nodes * self.order))
-        # self.k_old = [1.0, 1.0,]
-        # self.k_new = 1.0
-        self.k = [1.0, 1.1, 1.2]
+        self.fission_source = np.zeros((self.homogenized_problem.groups,
+                                        self.nodes * self.order))
+        self.scatter_source = np.zeros((self.homogenized_problem.groups,
+                                        self.nodes * self.order))
+        self.k = [1.0, 2.0, 1.2]
         self.order = self.nodal_data.order_of_legendre_poly
         self.flux_coefficients = np.ones((self.groups, self.nodes * self.order))
         self.flux = np.ones((3, self.groups, self.nodes*self.solution_cells))
-        self.flux[2,:,:] = 2*np.ones((self.groups, self.nodes*self.solution_cells))
-        self.spatial_fission_source_new = np.ones((self.groups, self.nodes*self.solution_cells))
-        self.spatial_fission_source_old = np.ones((self.groups, self.nodes*self.solution_cells))
+        self.flux[2, :, :] = 2*np.ones((self.groups, self.nodes*self.solution_cells))
         self.spatial_fission_source = np.ones((2, self.groups, self.nodes*self.solution_cells))
 
         # Explicitly define chi and nu, as presently I haven't looked into homogenizing them.
@@ -59,7 +56,7 @@ class NodalSolve:
                 for group in xrange(self.groups):
                     fsi = 2*self.nodes+self.nodes*eqn + node  # Fission Source Index (fsi)
                     fci = eqn + node*self.order  # Flux Coefficient Index (fci)
-                    self.fission_source_old[1-group, fsi] = self.chi[1-group] * self.nu[group] *\
+                    self.fission_source[1 - group, fsi] = self.chi[1 - group] * self.nu[group] * \
                                                           self.homogenized_problem.sig_f_g[group, node] * \
                                                           self.flux_coefficients[group, fci] / self.k[1]
 
@@ -69,15 +66,15 @@ class NodalSolve:
                 for group in xrange(self.groups):
                     ssi = 2*self.nodes+self.nodes*eqn + node  # Scatter Source Index (fsi)
                     fci = eqn + node*self.order  # Flux Coefficient Index (fci)
-                    self.scatter_source_old[1-group, ssi] = self.homogenized_problem.sig_sout_g[group][node] * \
-                                                            self.flux_coefficients[group, fci]
+                    self.scatter_source[1 - group, ssi] = self.homogenized_problem.sig_sout_g[group][node] * \
+                                                          self.flux_coefficients[group, fci]
 
     def iterate_flux_coefficients(self):
 
         inverse = np.linalg.inv(self.fast_system)
-        self.flux_coefficients[0, :] = np.dot(inverse, np.array([self.fission_source_old[0, :]]).T)[:, 0]
+        self.flux_coefficients[0, :] = np.dot(inverse, np.array([self.fission_source[0, :]]).T)[:, 0]
         inverse = np.linalg.inv(self.slow_system)
-        self.flux_coefficients[1, :] = np.dot(inverse, np.array([self.scatter_source_old[1, :]]).T)[:, 0]
+        self.flux_coefficients[1, :] = np.dot(inverse, np.array([self.scatter_source[1, :]]).T)[:, 0]
 
     def build_spatial_flux(self):
 
@@ -87,8 +84,8 @@ class NodalSolve:
                 flux_index = self.solution_cells*node+index
                 coeff_start = self.order*node
                 coeff_end = self.order*(node+1)
-                self.flux[0, 0, flux_index] = legval(normalized_index, self.flux_coefficients[1, coeff_start:coeff_end])
-                self.flux[0, 1, flux_index] = legval(normalized_index, self.flux_coefficients[0, coeff_start:coeff_end])
+                self.flux[0, 1, flux_index] = legval(normalized_index, self.flux_coefficients[1, coeff_start:coeff_end])
+                self.flux[0, 0, flux_index] = legval(normalized_index, self.flux_coefficients[0, coeff_start:coeff_end])
 
     def build_spatial_fission_source(self):
 
@@ -97,8 +94,7 @@ class NodalSolve:
                 for index in xrange(self.solution_cells):
                     si = node*self.solution_cells + index  # Source Index (si)
                     self.spatial_fission_source[0, 1-group, si] = self.chi[1-group] * self.nu[group] *\
-                                                                   self.homogenized_problem.sig_f_g[group, node] * \
-                                                                   self.flux[0, group, si] / self.k[0]
+                                                                   self.homogenized_problem.sig_f_g[group, node] * self.flux[0, group, si]
 
     def iterate_eigenvalue(self):
 
@@ -120,8 +116,8 @@ class NodalSolve:
 
     def evaluate_convergence_criteria(self):
 
-        self.k_converged = np.amax(np.abs(self.k[0] - self.k[1]))/(1-self.k_epsilon) < 1e-6
-        self.flux_converged = np.amax(np.abs(self.flux[0,0,:] - self.flux[1,0,:]))/(1-self.flux_epsilon) < 1e-6
+        self.k_converged = np.amax(np.abs(self.k[0] - self.k[1]))/np.abs(1-self.k_epsilon) < 1e-6
+        self.flux_converged = np.amax(np.abs(self.flux[0,0,:] - self.flux[1,0,:]))/np.abs(1-self.flux_epsilon) < 1e-6
         self.fission_source_converged = np.amax(np.abs(self.spatial_fission_source[0,0,:]
                                                        - self.spatial_fission_source[1,0,:])) < 1e-6
 
@@ -129,14 +125,18 @@ class NodalSolve:
 
         while not self.converged:
             self.form_fission_source()
+            self.iterate_flux_coefficients()
             self.form_scatter_source()
             self.iterate_flux_coefficients()
             self.build_spatial_flux()
             self.build_spatial_fission_source()
             self.iterate_eigenvalue()
             self.calculate_convergence_parameters()
+            self.evaluate_convergence_criteria()
             if self.k_converged and self.flux_converged and self.fission_source_converged:
                 self.converged = True
+                integral_flux = np.sum(self.flux[0,:,:])
+                self.flux[0, :, :] = self.flux[0, :, :]/integral_flux  # normalize flux
                 print self.k[0]
             else:
                 self.k[2] = self.k[1]
@@ -148,17 +148,15 @@ class NodalSolve:
 if __name__=="__main__":
 
     test = NodalSolve(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test.csv'])
-    # test.form_fission_source()
-    # test.form_scatter_source()
-    # print test.scatter_source_old
-    # test.iterate_flux_coefficients()
-    # print test.flux_coefficients
-    # test.build_spatial_flux()
-    # print test.flux
-    # test.build_spatial_fission_source()
-    # test.iterate_eigenvalue()
-    # print test.k_new
     test.solve()
+    x = numpy.arange(0.0, 30., 30.0 / 384.0)
+    import matplotlib.pyplot as plt
+    plt.plot(x, test.flux[0, 0, :])
+    plt.plot(x, test.flux[0, 1, :])
+    plt.xlabel('Position [cm]')
+    plt.ylabel('Flux [s^-1 cm^-2]')
+    plt.title('Neutron Flux')
+    plt.show()
 
 
 
