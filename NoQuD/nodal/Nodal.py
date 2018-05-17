@@ -72,10 +72,10 @@ class Nodal(object):
             for j in xrange(0, self.nodes - 1):
                 for k in xrange(0, self.order_of_legendre_poly):
 
-                    rhs1 = f[i][2 * j]
+                    rhs1 = self.f[i][2 * j]
                     self.linear_system[i][self.nodes + 1 + j][self.order_of_legendre_poly * j + k] = rhs1
 
-                    rhs2 = pow(-1, k) * f[i][2 * j + 1]
+                    rhs2 = pow(-1, k+1) * self.f[i][2 * j + 1]
                     self.linear_system[i][self.nodes + 1 + j][self.order_of_legendre_poly * (j + 1) + k] = rhs2
 
     def balance_condition(self):
@@ -120,6 +120,9 @@ class Nodal(object):
         self.balance_condition()
         self.first_weighted_moment()
         self.second_weighted_moment()
+
+
+
 
 if __name__ == "__main__":
 
