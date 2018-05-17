@@ -62,7 +62,7 @@ class HomogenizeAssembly:
 class HomogenizeGlobe:
 
     def __init__(self, single_assembly_input_files):
-        # single_assembly_input_files should contain the assembly information file, followed by the assembly information
+        # single_assembly_input_files should contain the global assembly information file, followed by the assembly information
         # files for each unique assembly.
         self.single_assembly_input_files = single_assembly_input_files
 
