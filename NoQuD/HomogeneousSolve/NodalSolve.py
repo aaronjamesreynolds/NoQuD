@@ -1,4 +1,9 @@
+#!/usr/bin/env python
+
+""" Solves a homogenized problem using nodal methods."""
+
 import numpy as np
+import matplotlib.pyplot as plt
 from NoQuD.homogenize.homogenize import *
 from NoQuD.nodal.Nodal import *
 from numpy.polynomial.legendre import legval as legval
@@ -235,8 +240,7 @@ if __name__=="__main__":
 
     test = NodalSolve(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test_b.csv'])
     test.solve()
-    x = numpy.arange(0.0, 30., 30.0 / 384.0)
-    import matplotlib.pyplot as plt
+    x = np.arange(0.0, 30., 30.0 / 384.0)
     plt.plot(x, test.flux[0, 0, :])
     plt.plot(x, test.flux[0, 1, :])
     plt.xlabel('Position [cm]')
