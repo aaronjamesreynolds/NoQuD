@@ -201,5 +201,4 @@ def assign_key_length(data, assembly_types):
     except ValueError:
         raise ValueError("The input file may have incorrect data types. Make sure the key lengths are correctly "
                          "formatted.")
-
     return key_length

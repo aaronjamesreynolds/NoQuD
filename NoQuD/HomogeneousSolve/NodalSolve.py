@@ -18,7 +18,7 @@ class NodalSolve:
     initialized.
 
     Args:
-        assembly_input_files:  should contain the assembly information file, followed by the assembly information
+        assembly_input_files (str[]):  should contain the assembly information file, followed by the assembly information
         files for each unique assembly.
 
     Attributes:
@@ -240,7 +240,7 @@ if __name__=="__main__":
 
     test = NodalSolve(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test_b.csv'])
     test.solve()
-    x = np.arange(0.0, 30., 30.0 / 384.0)
+    x = np.arange(0.0, 160., 160. / 2048.0)
     plt.plot(x, test.flux[0, 0, :])
     plt.plot(x, test.flux[0, 1, :])
     plt.xlabel('Position [cm]')
