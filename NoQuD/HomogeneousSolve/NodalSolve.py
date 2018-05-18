@@ -56,7 +56,7 @@ class NodalSolve:
                                 self.assembly_sizes, self.homogenized_problem.f_g,
                                 self.homogenized_problem.groups, len(self.homogenized_problem.assembly_map))
 
-        # Assign commonly used variables in from HomogenizeGlobe and Nodal instances.
+        # Assign commonly used variables from HomogenizeGlobe and Nodal instances.
         self.order = self.nodal_data.order_of_legendre_poly
         self.groups = self.homogenized_problem.groups
         self.nodes = self.nodal_data.nodes
@@ -65,15 +65,19 @@ class NodalSolve:
         self.slow_system = self.nodal_data.linear_system[1, :, :]
 
         # Initialize variables.
-        self.fission_source = np.zeros((self.groups,
-                                        self.nodes * self.order))
-        self.scatter_source = np.zeros((self.groups,
-                                        self.nodes * self.order))
-        self.k = [1.0, 2.0, 1.2]
+        self.fission_source = np.zeros((self.groups, self.nodes * self.order))
+        self.scatter_source = np.zeros((self.groups, self.nodes * self.order))
+        self.k = [1.0, 2.0, 1.2] # set initial values to be different as to not divide by zero
         self.flux_coefficients = np.ones((self.groups, self.nodes * self.order))
         self.flux = np.ones((3, self.groups, self.nodes*self.solution_cells))
         self.flux[2, :, :] = 2*np.ones((self.groups, self.nodes*self.solution_cells))
         self.spatial_fission_source = np.ones((2, self.groups, self.nodes*self.solution_cells))
+        self.flux_epsilon = 0
+        self.k_epsilon = 0
+        self.converged = False
+        self.k_converged = False
+        self.flux_converged = False
+        self.fission_source_converged = False
 
         # Explicitly define chi and nu, as presently I haven't looked into homogenizing them.
         self.chi = np.zeros((self.groups, 1))
@@ -82,15 +86,15 @@ class NodalSolve:
         self.nu = np.zeros((self.groups, 1))
         self.nu[0] = self.homogenized_problem.nu[0, 0]
         self.nu[1] = self.homogenized_problem.nu[1, 0]
-        self.flux_epsilon = 0
-        self.k_epsilon = 0
-        self.converged = False
-        self.k_converged = False
-        self.flux_converged = False
-        self.fission_source_converged = False
 
-        # Not functional for more than two groups.
+
+    # Not functional for more than two groups.
     def form_fission_source(self):
+
+        """ Calculates the fission source used in solving the nodal linear system.
+        Uses the current flux_coefficients values.
+        """
+
         for node in xrange(self.nodes):
             for eqn in xrange(self.order - 2):
                 for group in xrange(self.groups):
@@ -101,6 +105,11 @@ class NodalSolve:
                                                           self.flux_coefficients[group, fci] / self.k[1]
 
     def form_scatter_source(self):
+
+        """ Calculates the scattering source used in solving the nodal linear system.
+        Uses the current flux_coefficients values.
+        """
+
         for node in xrange(self.nodes):
             for eqn in xrange(self.order - 2):
                 for group in xrange(self.groups):
@@ -111,12 +120,20 @@ class NodalSolve:
 
     def iterate_flux_coefficients(self):
 
+        """ Calculates the inverse of the linear system and solves for a new set of flux_coefficients.
+        Uses current fission_source and scatter_source values.
+        """
+
         inverse = np.linalg.inv(self.fast_system)
         self.flux_coefficients[0, :] = np.dot(inverse, np.array([self.fission_source[0, :]]).T)[:, 0]
         inverse = np.linalg.inv(self.slow_system)
         self.flux_coefficients[1, :] = np.dot(inverse, np.array([self.scatter_source[1, :]]).T)[:, 0]
 
     def build_spatial_flux(self):
+
+        """ Calculates the flux across all nodes.
+        Uses current flux_coefficients values.
+        """
 
         for node in xrange(self.nodes):
             for index in xrange(self.solution_cells):
@@ -129,6 +146,10 @@ class NodalSolve:
 
     def build_spatial_fission_source(self):
 
+        """ Calculates the fission source across all nodes.
+        Uses current values for flux.
+        """
+
         for node in xrange(self.nodes):
             for group in xrange(self.groups):
                 for index in xrange(self.solution_cells):
@@ -138,14 +159,31 @@ class NodalSolve:
 
     def iterate_eigenvalue(self):
 
+        """ Calculates a new multiplication factor.
+        Uses past value of the multiplication factor, spatial_fission_source, and current value of
+        spatial_fission_source.
+        """
+
         self.k[0] = self.k[1]*np.sum(self.spatial_fission_source[0, :, :])/np.sum(self.spatial_fission_source[1, :, :])
 
     def normalized_index(self, unnormalized_index):
+
+        """ Projects the unnormalized_index onto a -1 to 1 domain.
+
+        Args:
+            unnormalized_index (int)
+        :return:
+            normalized_index (float)
+        """
 
         normalized_index = (2*unnormalized_index-self.solution_cells)/float(self.solution_cells)+1/self.solution_cells
         return normalized_index
 
     def calculate_convergence_parameters(self):
+
+        """ Calculates parameters used in assessing the convergence of the power iteration.
+        Uses the current and pass two values of flux and multiplication factor.
+        """
 
         current_gen_diff = np.abs(self.flux[0, :, :]-self.flux[1, :, :])
         last_gen_diff = np.abs(self.flux[1, :, :]-self.flux[2, :, :])
@@ -156,12 +194,19 @@ class NodalSolve:
 
     def evaluate_convergence_criteria(self):
 
-        self.k_converged = np.amax(np.abs(self.k[0] - self.k[1]))/np.abs(1-self.k_epsilon) < 1e-6
-        self.flux_converged = np.amax(np.abs(self.flux[0,0,:] - self.flux[1,0,:]))/np.abs(1-self.flux_epsilon) < 1e-6
-        self.fission_source_converged = np.amax(np.abs(self.spatial_fission_source[0,0,:]
-                                                       - self.spatial_fission_source[1,0,:])) < 1e-6
+        """ Assert whether or not k, flux, and spatial_fission_source meet convergence criteria.
+        Uses current and past values of k, flux, and spatial_fission_source.
+        """
+
+        self.k_converged = np.amax(np.abs(self.k[0] - self.k[1])) / np.abs(1 - self.k_epsilon) < 1e-6
+        self.flux_converged = np.amax(np.abs(self.flux[0, 0, :] - self.flux[1, 0, :])) / np.abs(
+            1 - self.flux_epsilon) < 1e-6
+        self.fission_source_converged = np.amax(np.abs(self.spatial_fission_source[0, 0, :]
+                                                       - self.spatial_fission_source[1, 0, :])) < 1e-6
 
     def solve(self):
+
+        """ Executes a power iteration solver for the homogeneous problem."""
 
         while not self.converged:
             self.form_fission_source()
@@ -175,10 +220,11 @@ class NodalSolve:
             self.evaluate_convergence_criteria()
             if self.k_converged and self.flux_converged and self.fission_source_converged:
                 self.converged = True
-                integral_flux = np.sum(self.flux[0,:,:])
+                integral_flux = np.sum(self.flux[0, :, :])  # temp variable used in normalizing flux
                 self.flux[0, :, :] = self.flux[0, :, :]/integral_flux  # normalize flux
                 print self.k[0]
             else:
+                # Reassign values for next generation.
                 self.k[2] = self.k[1]
                 self.k[1] = self.k[0]
                 self.flux[2, :, :] = self.flux[1, :, :]
