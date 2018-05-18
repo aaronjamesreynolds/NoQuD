@@ -6,30 +6,70 @@ from numpy.polynomial.legendre import legval as legval
 
 class NodalSolve:
 
-    def __init__(self, assembly_input_files):
-        # single_assembly_input_files should contain the assembly information file, followed by the assembly information
-        # files for each unique assembly.
+    """ Creates homogenized data for a 1D, 2 group problem and solves using nodal quasi-diffusion methods.
 
+    The homogenized nuclear data for the assembly(s) described by the input files is calculated. From this homogenized
+    data, the linear system required for a nodal solve is generated. Variables necessary for the solve process are
+    initialized.
+
+    Args:
+        assembly_input_files:  should contain the assembly information file, followed by the assembly information
+        files for each unique assembly.
+
+    Attributes:
+        homogenized_problem (HomogenizeGlobe instance): contains homogenized nuclear data.
+        assembly_sizes (float[][]): size of each unique assembly in each group
+        nodal_data (Nodal instance): contains the linear system necessary for the nodal solve method
+        order (int): number of coefficients in polynomial approximation to flux in each node
+        groups (int): number of energy groups in problem (current implementation only works for two groups)
+        nodes (int): number of nodes in problem. Equal to number of assemblies present in heterogeneous problem.
+        solution_cells (int): mesh length in homogeneous solution. This is a per node quantity.
+        fast_system (float[][]): the linear system used to solve for the fast flux.
+        slow_system (float[][]): the linear system used to solve for the slow, or thermal, flux.
+        fission_source (float[][]): the fission source terms in the RHS of the nodal solve
+        scatter_source (float[][]): the scatter source terms in the RHS of the nodal solve.
+        k (float[]): the multiplication factor. Stores the current value and two previous values.
+        flux_coefficients (float[][]): coefficients to the polynomial flux approximation
+        flux (float[][][]): the fast and thermal fluxes across the nodes. Stores and current and previous values.
+        spatial_fission_source (float[][][]): the fission source across the nodes. Stores the current and previous
+            values.
+        chi (float[]): the probability for a fission neutron to be born into a particular energy group.
+        nu (float[]): the average number of neutrons produced per fission in each energy group.
+        flux_epsilon (float): a convergence parameter on the flux
+        k_epsilon (float): a convergence parameter on the mulitplication factor.
+        converged (boolean): evaluates whether all convergence parameters are met.
+        k_converged (boolean): evaluation of multiplication factor convergence.
+        flux_converged (boolean): evaluation of flux convergence.
+        fission_source_converged (boolean): evaluation of fission source convergence.
+    """
+
+    def __init__(self, assembly_input_files):
+
+        # Obtain homogenized data
         self.homogenized_problem = HomogenizeGlobe(assembly_input_files)
-        self.assembly_cell_sizes = self.homogenized_problem.assembly_size*np.ones((self.homogenized_problem.groups,
+
+        # Obtain linear system for nodal solve
+        self.assembly_sizes = self.homogenized_problem.assembly_size*np.ones((self.homogenized_problem.groups,
                                                                           len(self.homogenized_problem.assembly_map)))
         eddington_over_sig_t = np.divide(self.homogenized_problem.eddington_factor_g, self.homogenized_problem.sig_t_g)
         self.nodal_data = Nodal(eddington_over_sig_t, self.homogenized_problem.sig_r_g,
-                                self.assembly_cell_sizes, self.homogenized_problem.f_g,
+                                self.assembly_sizes, self.homogenized_problem.f_g,
                                 self.homogenized_problem.groups, len(self.homogenized_problem.assembly_map))
+
+        # Assign commonly used variables in from HomogenizeGlobe and Nodal instances.
         self.order = self.nodal_data.order_of_legendre_poly
         self.groups = self.homogenized_problem.groups
         self.nodes = self.nodal_data.nodes
-        self.solution_cells = 128 # this is a per node quantity
-        self.linear_system = self.nodal_data.linear_system
-        self.fast_system = self.linear_system[0, :, :]
-        self.slow_system = self.linear_system[1, :, :]
-        self.fission_source = np.zeros((self.homogenized_problem.groups,
+        self.solution_cells = self.homogenized_problem.cells/self.nodes # this is a per node quantity
+        self.fast_system = self.nodal_data.linear_system[0, :, :]
+        self.slow_system = self.nodal_data.linear_system[1, :, :]
+
+        # Initialize variables.
+        self.fission_source = np.zeros((self.groups,
                                         self.nodes * self.order))
-        self.scatter_source = np.zeros((self.homogenized_problem.groups,
+        self.scatter_source = np.zeros((self.groups,
                                         self.nodes * self.order))
         self.k = [1.0, 2.0, 1.2]
-        self.order = self.nodal_data.order_of_legendre_poly
         self.flux_coefficients = np.ones((self.groups, self.nodes * self.order))
         self.flux = np.ones((3, self.groups, self.nodes*self.solution_cells))
         self.flux[2, :, :] = 2*np.ones((self.groups, self.nodes*self.solution_cells))
@@ -147,7 +187,7 @@ class NodalSolve:
 
 if __name__=="__main__":
 
-    test = NodalSolve(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test.csv'])
+    test = NodalSolve(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test_b.csv'])
     test.solve()
     x = numpy.arange(0.0, 30., 30.0 / 384.0)
     import matplotlib.pyplot as plt
