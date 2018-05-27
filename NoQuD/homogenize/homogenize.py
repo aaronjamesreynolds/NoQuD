@@ -186,7 +186,7 @@ class HomogenizeGlobe:
 
         # Determine local directory to find input file.
         self.single_assembly_input_files = single_assembly_input_files
-        current_directory = os.path.dirname(os.path.realpath(__file__))
+        current_directory = os.getcwd()
         file_path = os.path.join(current_directory, self.single_assembly_input_files[0])
         self.sig_t, self.sig_sin, self.sig_sout, self.sig_f, self.nu, self.chi, self.groups, self.cells, self.cell_size \
             , self.assembly_map, self.material, self.assembly_size, self.assembly_cells = read_csv.read_csv(file_path)
