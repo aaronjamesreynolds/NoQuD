@@ -54,8 +54,7 @@ class HomogenizeAssembly:
 
         # Determine current directory path for input file and read in data, then use that data to create a
         # StepCharacteristicSolver instance, where the heterogeneous solution is found.
-        current_directory = os.getcwd()
-        file_path = os.path.join(current_directory, assembly_data_file)
+        file_path = assembly_data_file
         self.sig_t, self.sig_sin, self.sig_sout, self.sig_f, self.nu, self.chi, self.groups, self.cells, self.cell_size\
             , self.assembly_map, self.material, self.assembly_size, self.assembly_cells = read_csv.read_csv(file_path)
         self.slab = StepCharacteristicSolver(self.sig_t, self.sig_sin, self.sig_sout, self.sig_f, self.nu, self.chi,
@@ -186,8 +185,7 @@ class HomogenizeGlobe:
 
         # Determine local directory to find input file.
         self.single_assembly_input_files = single_assembly_input_files
-        current_directory = os.getcwd()
-        file_path = os.path.join(current_directory, self.single_assembly_input_files[0])
+        file_path = single_assembly_input_files[0]
         self.sig_t, self.sig_sin, self.sig_sout, self.sig_f, self.nu, self.chi, self.groups, self.cells, self.cell_size \
             , self.assembly_map, self.material, self.assembly_size, self.assembly_cells = read_csv.read_csv(file_path)
 
@@ -245,9 +243,3 @@ class HomogenizeGlobe:
             self.sig_sout_g[:, node] = self.sig_sout_a[:, self.assembly_map[node] - 1]
             self.sig_f_g[:, node] = self.sig_f_a[:, self.assembly_map[node] - 1]
             self.f_g[:, 2*node:2*node + 2] = self.f_a[:, 2*(self.assembly_map[node] - 1):2*self.assembly_map[node] - 1]
-
-
-if __name__ == '__main__':
-    test = HomogenizeAssembly('assembly_info_single_test.csv')
-    print test.sig_sin_h
-    test = HomogenizeGlobe(['assembly_info_test.csv', 'assembly_info_single_test.csv', 'assembly_info_single_test.csv'])
