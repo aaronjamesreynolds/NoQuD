@@ -14,6 +14,3 @@ def test_nodal_solve_running():
 
     test = NS.NodalSolve([file_path1, file_path2, file_path2])
     test.solve()
-
-if __name__=="__main__":
-    test_nodal_solve_running()
