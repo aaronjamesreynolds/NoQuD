@@ -2,6 +2,8 @@ from codecs import open
 from os import path
 import sys
 
+#Note: this file is a work in progress.
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
