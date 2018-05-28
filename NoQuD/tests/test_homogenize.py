@@ -1,5 +1,10 @@
+#!/usr/bin/env python
+
 import NoQuD.homogenize.homogenize as homo
 import os
+
+# Still need tests for the homogenized results.
+
 
 def test_homogenize_assembly_running():
 
@@ -9,6 +14,7 @@ def test_homogenize_assembly_running():
     local_path = os.path.join('testing_files', 'assembly_info_single_test.csv')
     file_path = os.path.join(current_dir, local_path)
     test = homo.HomogenizeAssembly(file_path)
+
 
 def test_homogenize_global_running():
 
