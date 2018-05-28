@@ -5,7 +5,7 @@ def test_homogenize_assembly_running():
 
     """ Make sure the HomogenizeAssembly class can be initialized (which also performs the homogenization) without
         error. """
-    current_dir = os.getcwd()
+    current_directory = os.path.dirname(os.path.realpath(__file__))
     local_path = os.path.join('testing_files', 'assembly_info_single_test.csv')
     file_path = os.path.join(current_dir, local_path)
     test = homo.HomogenizeAssembly(file_path)
@@ -15,7 +15,7 @@ def test_homogenize_global_running():
     """ Make sure the HomogenizeGlobal class can be initialized (which also performs the homogenization) without
         error. """
 
-    current_dir = os.getcwd()
+    current_directory = os.path.dirname(os.path.realpath(__file__))
     local_path1 = os.path.join('testing_files', 'assembly_info_test.csv')
     local_path2 = os.path.join('testing_files', 'assembly_info_single_test.csv')
     file_path1 = os.path.join(current_dir, local_path1)
