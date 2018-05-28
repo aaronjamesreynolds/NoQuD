@@ -22,13 +22,6 @@ def test_homogenize_global_running():
     file_path2 = os.path.join(current_dir, local_path2)
     test = homo.HomogenizeGlobe([file_path1, file_path2, file_path2])
 
-def test_homogenize_assembly_correct_results():
-
-    print 'blah'
-
-def test_homogenize_global_correct_results():
-
-    print 'blah'
 
 if __name__=="__main__":
     test_homogenize_assembly_running()
