@@ -6,19 +6,19 @@ import numpy as np
 from numba import jitclass          # import the decorator
 from numba import int64, float64
 
-spec = [
-    ('repeated_coefficients', float64[:, :]),               # a simple scalar field
-    ('diffusion_constant', float64[:, :]),
-    ('sigma_r', float64[:, :]),
-    ('cell_size', float64[:, :]),
-    ('f', float64[:, :]),
-    ('groups', int64),
-    ('nodes', int64),
-    ('order_of_legendre_poly', int64),
-    ('linear_system', float64[:, :, :]),
-]
+# spec = [
+#     ('repeated_coefficients', float64[:, :]),               # a simple scalar field
+#     ('diffusion_constant', float64[:, :]),
+#     ('sigma_r', float64[:, :]),
+#     ('cell_size', float64[:, :]),
+#     ('f', float64[:, :]),
+#     ('groups', int64),
+#     ('nodes', int64),
+#     ('order_of_legendre_poly', int64),
+#     ('linear_system', float64[:, :, :]),
+# ]
 
-@jitclass(spec)
+#@jitclass(spec)
 class Nodal(object):
 
     """ Builds the coefficient matrix of the linear system required to perform a nodal diffusion solve.
