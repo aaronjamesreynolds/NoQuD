@@ -91,8 +91,9 @@ class HomogenizeAssembly:
                                       * self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
                 self.sig_f_h[group][0] = self.sig_f_h[group][0] + self.sig_f[group][self.material[cell]] \
                                       * self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
+                #Eddington factors homogenized based on deviation from 1/3
                 self.eddington_factor_h[group][0] = self.eddington_factor_h[group][0] + \
-                                                 self.slab.eddington_factors[group][cell] * \
+                                                    (abs(self.slab.eddington_factors[group][cell] - 1/3) + 1/3) * \
                                                  self.slab.flux_new[group][cell] / np.sum(self.slab.flux_new[group][:])
                 self.sig_r_h = self.sig_t_h - self.sig_sin_h
 
