@@ -213,6 +213,7 @@ class NodalSolve:
 
         """ Executes a power iteration solver for the homogeneous problem."""
 
+        print "Performing nodal solve..."
         while not self.converged:
             self.form_fission_source()
             self.iterate_flux_coefficients()
