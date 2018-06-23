@@ -227,7 +227,8 @@ class NodalSolve:
                 self.converged = True
                 integral_flux = np.sum(self.flux[0, :, :])  # temp variable used in normalizing flux
                 self.flux[0, :, :] = self.flux[0, :, :]/integral_flux  # normalize flux
-                print self.k[0]
+                message = str.format('Multiplication factor: {}', self.k[0])
+                print message
             else:
                 # Reassign values for next generation.
                 self.k[2] = self.k[1]
