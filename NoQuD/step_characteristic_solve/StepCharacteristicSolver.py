@@ -244,7 +244,7 @@ class StepCharacteristicSolver(object):
 
     # Using all the methods above, solve for an eigenvalue and flux with defined convergence criteria.
     def solve(self):
-        print "Sit tight. This takes a while."
+        print "Performing method of characterisitics solve..."
 
         while self.exit2 == 0:  # source convergence
 
